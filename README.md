@@ -9,6 +9,16 @@ composer create-project laravel/laravel dreamdb2
 # Create key
 php artisan key:generate --ansi
 
+# Install dependencies
+composer install
+
+# In case of error
+composer dump-autoload
+# or 
+composer update
+# then
+composer install
+
 # Start server
 php artisan serve
 ```
