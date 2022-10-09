@@ -32,6 +32,7 @@
 ## Social Media (App)
 
 ```bash
-login/ # POST login usuario (nombre usuario, contraseña y datos personales)
-register/ # POST registro usuario (nombre usuario y contraseña)
+login/      # POST login usuario (nombre usuario, contraseña y datos personales)
+register/   # POST registro usuario (nombre usuario y contraseña)
+/           # GET info app, con opción de login o registro
 ```
