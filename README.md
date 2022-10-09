@@ -45,8 +45,10 @@ user/register # POST registro usuario (nombre usuario y contraseña)
 {user}/update # POST actualizar perfil de usuario (nombre usuario, datos personales)
 {user}/delete # POST eliminar perfil de usuario (nombre usuario)
 {user}/inbox # GET mensajes recibidos de usuario (nombre usuario)
+# --- Creo que no hace falta --- #
 {user}/inbox/send # POST enviar mensaje a usuario (nombre usuario, nombre usuario destino, texto)
 {user}/inbox/delete # POST eliminar mensaje de usuario (nombre usuario, id mensaje)
+# ------------------------------ #
 {user}/followers # GET seguidores usuario (nombre usuario)
 {user}/following # GET seguidos por el usuario (nombre usuario)
 {user}/follow # POST seguir usuario (nombre usuario, nombre usuario a seguir)
