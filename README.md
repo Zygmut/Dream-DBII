@@ -38,8 +38,6 @@ php artisan db:seed
 ### Users
 
 ```bash
-user/login # POST login usuario (nombre usuario, contraseña y datos personales)
-user/register # POST registro usuario (nombre usuario y contraseña)
 {user}/ # GET perfil de usuario (nombre usuario)
 {user}/edit # POST editar perfil de usuario (nombre usuario, datos personales)
 {user}/update # POST actualizar perfil de usuario (nombre usuario, datos personales)
@@ -64,6 +62,13 @@ user/register # POST registro usuario (nombre usuario y contraseña)
 {user}/publications/stories # GET historias de usuario (nombre usuario)
 {user}/publications/stories/create # POST crear historia (nombre usuario, texto)
 {user}/publications/stories/delete # POST eliminar historia (nombre usuario, id historia)
+```
+
+### Social Media (App)
+
+```bash
+login/ # POST login usuario (nombre usuario, contraseña y datos personales)
+register/ # POST registro usuario (nombre usuario y contraseña)
 ```
 
 # Laravel
