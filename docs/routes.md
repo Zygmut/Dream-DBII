@@ -4,8 +4,8 @@
 
 ```bash
 {user}/ # GET perfil de usuario (nombre usuario)
-{user}/edit # POST editar perfil de usuario (nombre usuario, datos personales)
-{user}/update # POST actualizar perfil de usuario (nombre usuario, datos personales)
+{user}/edit # GET editar perfil de usuario (nombre usuario, datos personales)
+{user}/edit # POST actualizar perfil de usuario (nombre usuario, datos personales)
 {user}/delete # POST eliminar perfil de usuario (nombre usuario)
 {user}/inbox # GET mensajes recibidos de usuario (nombre usuario)
 # --- Creo que no hace falta --- #
