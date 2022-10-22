@@ -101,7 +101,7 @@ Route::get('/{username}', function ($username) {
     }
     // Get the user's publications from the database
     //$publications = DB::table('publication')->where('user_id', $user->id)->get();
-    $publications = [1,2,3,4]; // Temporal
+    $publications = [1, 2, 3, 4]; // Temporal
     // Get length of the publications
     $publicationsLength = count($publications);
     // Get the user's followers and following from the database
@@ -117,4 +117,52 @@ Route::get('/{username}', function ($username) {
             'numberPublications' => $publicationsLength
         ]
     );
+});
+
+// User profile edit page
+Route::get('{username}/edit', function ($username) {
+    // Check if the user is logged in
+    if (!session()->has('user')) {
+        return redirect('/login');
+    }
+    // Get the user from the database 
+    // (Posiblemente la consulta sea diferente al tener la base de datos montada)
+    $user = DB::table('user')->where('username', $username)->first();
+    // ...
+    // Show the user edit page with the user's data
+    return view('edit', ['user' => $user]);
+});
+
+// User profile edit form (update the user)
+Route::post('{username}/edit', function ($username) {
+    // Check if the user is logged in
+    if (!session()->has('user')) {
+        return redirect('/login');
+    }
+    // Get the data from the form
+    $data = request()->all();
+    // Validate the data
+    $validation = Validator::make($data, [
+        'nombre' => 'required',
+        'apellidos' => 'required',
+        'username' => 'required',
+        'password' => 'required'
+    ]);
+    // If the validation fails, redirect to the edit page
+    if ($validation->fails()) {
+        return redirect('/' . $username . '/edit')->withErrors($validation);
+    }
+    // Update the user in the database
+    DB::table('user')->where('username', $username)->update([
+        'nombre' => $data['nombre'],
+        'apellidos' => $data['apellidos'],
+        'username' => $data['username'],
+        'password' => $data['password']
+    ]);
+    // Replace the user session with the new data
+    session()->flush();
+    $user = DB::table('user')->where('username', $data['username'])->first();
+    session(['user' => $user]);
+    // If all went well, still in the page and show a success message
+    return redirect('/' . $username . '/edit')->with('success', 'Usuario actualizado correctamente');
 });
