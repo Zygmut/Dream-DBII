@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 
 /*
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 // Index page
 Route::get('/', function () {
-    return view('index');
+    return redirect('/login');
 });
 
 // Register page
@@ -42,7 +43,7 @@ Route::post('/register', function () {
         return redirect('/register')->withErrors($validation);
     }
     // Insert the user into the database
-    DB::table('users')->insert([
+    DB::table('user')->insert([
         'nombre' => $data['nombre'],
         'apellidos' => $data['apellidos'],
         'username' => $data['username'],
@@ -71,7 +72,7 @@ Route::post('/login', function () {
         return redirect('/login')->withErrors($validation);
     }
     // Get the user from the database
-    $user = DB::table('users')->where('username', $data['username'])->first();
+    $user = DB::table('user')->where('username', $data['username'])->first();
     // If the user does not exist, redirect to the login page and show an error message
     if (!$user) {
         return redirect('/login')->with('error', 'El usuario no existe');
@@ -80,6 +81,40 @@ Route::post('/login', function () {
     if ($user->password != $data['password']) {
         return redirect('/login')->with('error', 'La contraseña es incorrecta');
     }
-    // If the password is correct, redirect to the home page
-    return redirect('/home');
+    // Create a session with the user data
+    session(['user' => $user]);
+    // If the password is correct, redirect to {username} page
+    return redirect('/' . $user->username);
+});
+
+// User page
+Route::get('/{username}', function ($username) {
+    // Check if the user is logged in
+    if (!session()->has('user')) {
+        return redirect('/login');
+    }
+    // Get the user from the database
+    $user = DB::table('user')->where('username', $username)->first();
+    // If the user does not exist, redirect to the login page and show an error message
+    if (!$user) {
+        return redirect('/login')->with('error', 'El usuario no existe');
+    }
+    // Get the user's publications from the database
+    //$publications = DB::table('publication')->where('user_id', $user->id)->get();
+    $publications = [1,2,3,4]; // Temporal
+    // Get length of the publications
+    $publicationsLength = count($publications);
+    // Get the user's followers and following from the database
+    $followers = 700;
+    $following = 888;
+    // Show the user page with the user's data
+    return view(
+        'user',
+        [
+            'user' => $user,
+            'publications' => $publications,
+            'followers' => $followers, 'following' => $following,
+            'numberPublications' => $publicationsLength
+        ]
+    );
 });
