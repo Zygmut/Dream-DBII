@@ -27,6 +27,7 @@ CREATE TABLE
 
 CREATE TABLE
     info_usuario(
+        idInfo BIGINT PRIMARY KEY AUTO_INCREMENT,
         idUsuario BIGINT,
         nombreUsuario VARCHAR(255) NOT NULL,
         mail VARCHAR(255) NOT NULL,
