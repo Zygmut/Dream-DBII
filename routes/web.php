@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 
 /*
@@ -18,151 +17,25 @@ use Illuminate\Support\Facades\Session;
 */
 
 // Index page
-Route::get('/', function () {
-    return redirect('/login');
-});
+Route::get('/', 'App\Http\Controllers\IndexController@index');
 
 // Register page
-Route::get('/register', function () {
-    return view('register');
-});
+Route::get('/register', 'App\Http\Controllers\RegisterController@index');
 
-// Route to register a new user
-Route::post('/register', function () {
-    // Get the data from the form
-    $data = request()->all();
-    // Validate the data
-    $validation = Validator::make($data, [
-        'nombre' => 'required',
-        'apellidos' => 'required',
-        'username' => 'required',
-        'password' => 'required'
-    ]);
-    // If the validation fails, redirect to the register page
-    if ($validation->fails()) {
-        return redirect('/register')->withErrors($validation);
-    }
-    // Insert the user into the database
-    DB::table('user')->insert([
-        'nombre' => $data['nombre'],
-        'apellidos' => $data['apellidos'],
-        'username' => $data['username'],
-        'password' => $data['password']
-    ]);
-    // If the validation succeeds, redirect to the login page and show a success message
-    return redirect('/login')->with('success', 'Usuario registrado correctamente');
-});
+// Register form
+Route::post('/register', 'App\Http\Controllers\RegisterController@register');
 
 // Login page
-Route::get('/login', function () {
-    return view('login');
-});
+Route::get('/login', 'App\Http\Controllers\LoginController@index');
 
-// Login form (validate the user)
-Route::post('/login', function () {
-    // Get username and password from the form
-    $data = request()->all();
-    // Validate the data
-    $validation = Validator::make($data, [
-        'username' => 'required',
-        'password' => 'required'
-    ]);
-    // If the validation fails, redirect to the login page
-    if ($validation->fails()) {
-        return redirect('/login')->withErrors($validation);
-    }
-    // Get the user from the database
-    $user = DB::table('user')->where('username', $data['username'])->first();
-    // If the user does not exist, redirect to the login page and show an error message
-    if (!$user) {
-        return redirect('/login')->with('error', 'El usuario no existe');
-    }
-    // If the user exists, check if the password is correct
-    if ($user->password != $data['password']) {
-        return redirect('/login')->with('error', 'La contraseña es incorrecta');
-    }
-    // Create a session with the user data
-    session(['user' => $user]);
-    // If the password is correct, redirect to {username} page
-    return redirect('/' . $user->username);
-});
+// Login form validation
+Route::post('/login', 'App\Http\Controllers\LoginController@login');
 
 // User page
-Route::get('/{username}', function ($username) {
-    // Check if the user is logged in
-    if (!session()->has('user')) {
-        return redirect('/login');
-    }
-    // Get the user from the database
-    $user = DB::table('user')->where('username', $username)->first();
-    // If the user does not exist, redirect to the login page and show an error message
-    if (!$user) {
-        return redirect('/login')->with('error', 'El usuario no existe');
-    }
-    // Get the user's publications from the database
-    //$publications = DB::table('publication')->where('user_id', $user->id)->get();
-    $publications = [1, 2, 3, 4]; // Temporal
-    // Get length of the publications
-    $publicationsLength = count($publications);
-    // Get the user's followers and following from the database
-    $followers = 700;
-    $following = 888;
-    // Show the user page with the user's data
-    return view(
-        'user',
-        [
-            'user' => $user,
-            'publications' => $publications,
-            'followers' => $followers, 'following' => $following,
-            'numberPublications' => $publicationsLength
-        ]
-    );
-});
+Route::get('/{username}', 'App\Http\Controllers\User\UserController@index');
 
 // User profile edit page
-Route::get('{username}/edit', function ($username) {
-    // Check if the user is logged in
-    if (!session()->has('user')) {
-        return redirect('/login');
-    }
-    // Get the user from the database 
-    // (Posiblemente la consulta sea diferente al tener la base de datos montada)
-    $user = DB::table('user')->where('username', $username)->first();
-    // ...
-    // Show the user edit page with the user's data
-    return view('edit', ['user' => $user]);
-});
+Route::get('{username}/edit', 'App\Http\Controllers\User\UserController@edit');
 
-// User profile edit form (update the user)
-Route::post('{username}/edit', function ($username) {
-    // Check if the user is logged in
-    if (!session()->has('user')) {
-        return redirect('/login');
-    }
-    // Get the data from the form
-    $data = request()->all();
-    // Validate the data
-    $validation = Validator::make($data, [
-        'nombre' => 'required',
-        'apellidos' => 'required',
-        'username' => 'required',
-        'password' => 'required'
-    ]);
-    // If the validation fails, redirect to the edit page
-    if ($validation->fails()) {
-        return redirect('/' . $username . '/edit')->withErrors($validation);
-    }
-    // Update the user in the database
-    DB::table('user')->where('username', $username)->update([
-        'nombre' => $data['nombre'],
-        'apellidos' => $data['apellidos'],
-        'username' => $data['username'],
-        'password' => $data['password']
-    ]);
-    // Replace the user session with the new data
-    session()->flush();
-    $user = DB::table('user')->where('username', $data['username'])->first();
-    session(['user' => $user]);
-    // If all went well, still in the page and show a success message
-    return redirect('/' . $username . '/edit')->with('success', 'Usuario actualizado correctamente');
-});
+// User profile edit form
+Route::post('{username}/edit', 'App\Http\Controllers\User\UserController@update');
