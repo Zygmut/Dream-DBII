@@ -15,12 +15,24 @@
                     <input type="text" class="form-control" id="apellidos" name="apellidos" placeholder="Introduzca apellidos">
                 </div>
                 <div class="mb-3">
-                    <label for="username" class="form-label">Nombre usuario</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Introduzca el nombre de usuario">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Introduzca un teléfono">
                 </div>
                 <div class="mb-3">
-                    <label for="horarivet" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Introduzca la contraseña">
+                    <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                    <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
+                </div>
+                <div class="mb-3">
+                    <label for="mail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="mail" name="mail" placeholder="Introduzca un email">
+                </div>
+                <div class="mb-3">
+                    <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
+                    <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario" placeholder="Introduzca un nombre de usuario">
+                </div>
+                <div class="mb-3">
+                    <label for="contrasena" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="contrasena" name="contrasena" placeholder="Introduzca una contraseña">
                 </div>
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-outline-secondary w-25 m-2">
