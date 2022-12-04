@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
-class UserLandingPageController extends Controller
+class UserController extends Controller
 {
 
     /**
