@@ -29,10 +29,10 @@ Route::get('/login', 'App\Http\Controllers\LoginController@index');
 Route::post('/login', 'App\Http\Controllers\LoginController@login');
 
 // User page
-Route::get('/{username}', 'App\Http\Controllers\User\UserController@index');
+Route::get('/{username}', 'App\Http\Controllers\UserController@index');
 
 // User profile edit page
-Route::get('{username}/edit', 'App\Http\Controllers\User\UserController@edit');
+Route::get('{username}/edit', 'App\Http\Controllers\UserController@edit');
 
 // User profile edit form
-Route::post('{username}/edit', 'App\Http\Controllers\User\UserController@update');
+Route::post('{username}/edit', 'App\Http\Controllers\UserController@update');
