@@ -34,8 +34,12 @@ CREATE TABLE
 
 CREATE TABLE
     usuario_usario(
-        idUsuarioSeguido BIGINT PRIMARY KEY,
-        IdUsuarioSeguidor BIGINT PRIMARY KEY,
+        idUsuarioSeguido BIGINT,
+        IdUsuarioSeguidor BIGINT,
+        PRIMARY KEY (
+            idUsuarioSeguido,
+            IdUsuarioSeguidor
+        ),
         FOREIGN KEY (idUsuarioSeguido) REFERENCES usuario(idUsuario),
         FOREIGN KEY (idUsuarioSeguidor) REFERENCES usuario(idUsuario)
     );
@@ -71,16 +75,18 @@ CREATE TABLE
 
 CREATE TABLE
     historia_publicacion(
-        idHistoria BIGINT PRIMARY KEY,
-        idPublicacion BIGINT PRIMARY KEY,
+        idHistoria BIGINT,
+        idPublicacion BIGINT,
+        PRIMARY KEY (idHistoria, idPublicacion),
         FOREIGN KEY (idHistoria) REFERENCES historia(idHistoria),
         FOREIGN KEY (idPublicacion) REFERENCES publicacion(idPublicacion)
     );
 
 CREATE TABLE
     usuario_publicacion_rt(
-        idUsuario BIGINT PRIMARY KEY,
-        idPublicacion BIGINT PRIMARY KEY,
+        idUsuario BIGINT,
+        idPublicacion BIGINT,
+        PRIMARY KEY (idUsuario, idPublicacion),
         FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
         FOREIGN KEY (idPublicacion) REFERENCES publicacion(idPublicacion)
     );
