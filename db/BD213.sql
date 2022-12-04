@@ -8,7 +8,6 @@ CREATE TABLE
     persona(
         idPersona BIGINT PRIMARY KEY AUTO_INCREMENT,
         apellidos VARCHAR(255) NOT NULL,
-        mail VARCHAR(255) NOT NULL,
         telef VARCHAR(255) NOT NULL,
         fechaNacimiento DATETIME
     );
@@ -20,7 +19,9 @@ CREATE TABLE
         descripcion TINYTEXT NOT NULL,
         numSeguidores BIGINT,
         numSeguidos BIGINT,
-        fotoPerfil BLOB
+        fotoPerfil BLOB,
+        idPersona BIGINT,
+        FOREIGN KEY (idPersona) REFERENCES persona(idPersona)
     );
 
 CREATE TABLE
@@ -33,8 +34,8 @@ CREATE TABLE
 
 CREATE TABLE
     usuario_usario(
-        idUsuarioSeguido BIGINT,
-        IdUsuarioSeguidor BIGINT,
+        idUsuarioSeguido BIGINT PRIMARY KEY,
+        IdUsuarioSeguidor BIGINT PRIMARY KEY,
         FOREIGN KEY (idUsuarioSeguido) REFERENCES usuario(idUsuario),
         FOREIGN KEY (idUsuarioSeguidor) REFERENCES usuario(idUsuario)
     );
@@ -70,16 +71,16 @@ CREATE TABLE
 
 CREATE TABLE
     historia_publicacion(
-        idHistoria BIGINT,
-        idPublicacion BIGINT,
+        idHistoria BIGINT PRIMARY KEY,
+        idPublicacion BIGINT PRIMARY KEY,
         FOREIGN KEY (idHistoria) REFERENCES historia(idHistoria),
         FOREIGN KEY (idPublicacion) REFERENCES publicacion(idPublicacion)
     );
 
 CREATE TABLE
     usuario_publicacion_rt(
-        idUsuario BIGINT,
-        idPublicacion BIGINT,
+        idUsuario BIGINT PRIMARY KEY,
+        idPublicacion BIGINT PRIMARY KEY,
         FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
         FOREIGN KEY (idPublicacion) REFERENCES publicacion(idPublicacion)
     );
