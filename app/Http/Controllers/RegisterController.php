@@ -36,23 +36,52 @@ class RegisterController extends Controller
         $data = request()->all();
         // Validate the data
         $validation = Validator::make($data, [
-            'nombre' => 'required',
-            'apellidos' => 'required',
-            'username' => 'required',
-            'password' => 'required'
+            'nombre' => 'required | max:50 | min:3 | regex:/^[a-zA-Z]+$/',
+            'apellidos' => 'required | max:255 | regex:/^[a-zA-Z ]+$/',
+            'telefono' => 'required | max:9 | min:9 | regex:/^[0-9]+$/',
+            'fechaNacimiento' => 'required | date',
+            'mail' => 'required | email | max:255',
+            'nombreUsuario' => 'required | max:255 | min:3 | regex:/^[a-zA-Z0-9]+$/',
+            'contrasena' => 'required | max:255 | min:3 | regex:/^[a-zA-Z0-9]+$/',
         ]);
         // If the validation fails, redirect to the register page
         if ($validation->fails()) {
             return redirect('/register')->withErrors($validation);
         }
-        // Insert the user into the database
-        DB::table('user')->insert([
+
+        // Comprobar que el nombre de usuario o el mail no está en uso
+        $user = DB::table('usuarios')->where('nombreUsuario', $data['nombreUsuario'])->orWhere('mail', $data['mail'])->first();
+        if ($user) {
+            return redirect('/register')->withErrors([
+                'nombreUsuario' => 'El nombre de usuario o email ya está en uso',
+                'email' => 'El nombre de usuario o email ya está en uso'
+            ]);
+        }
+
+        // Insertar datos en tabla persona
+        $idPersona = DB::table('persona')->insertGetId([
             'nombre' => $data['nombre'],
             'apellidos' => $data['apellidos'],
-            'username' => $data['username'],
-            'password' => $data['password']
+            'telefono' => $data['telefono'],
+            'fechaNacimiento' => $data['fechaNacimiento'],
         ]);
-        // If the validation succeeds, redirect to the login page and show a success message
-        return redirect('/login')->with('success', 'Usuario registrado correctamente');
+        // Insertar datos en tabla usuario
+        $idUser = DB::table('usuario')->insertGetId([
+            'contrasena' => $data['contrasena'],
+            'descripcion' => 'Hola, soy ' . $data['nombreUsuario'],
+            'numSeguidores' => 0,
+            'numSeguidos' => 0,
+            'fotoPerfil' => 'default.jpg', // Mirar como subir una imagen por defecto a la base de datos
+            'idPersona' => $idPersona
+        ]);
+        // Insertar datos en tabla info_usuario
+        DB::table('info_usuario')->insert([
+            'nombreUsuario' => $data['nombreUsuario'],
+            'mail' => $data['mail'],
+            'idUsuario' => $idUser
+        ]);
+
+        // Redirigir a la página de login
+        return redirect('/login');
     }
 }
