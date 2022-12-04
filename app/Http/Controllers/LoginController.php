@@ -19,7 +19,7 @@ class LoginController extends Controller
         // Comprobar que el usuario está logueado
         if (Session::has('user')) {
             // Si está logueado, redirigir la página principal del usuario {username}
-            return redirect('/' . Session::get('user'));
+            return redirect('/' . session()->get('user')->username);
         }
         // Si no está logueado, redirigir a la página de login
         return view('login');
@@ -43,8 +43,23 @@ class LoginController extends Controller
         if ($validation->fails()) {
             return redirect('/login')->withErrors($validation);
         }
-        // Get the user from the database
-        $user = DB::table('user')->where('username', $data['username'])->first();
+        /**
+         * Obtener usuario de la siguiente consulta
+         * 
+         * SELECT
+         *     *
+         *FROM
+         *    usuario,
+         *    info_usuario
+         *WHERE 
+         *    usuario.idUsuario = info_usuario.idUsuario AND usuario.contrasena = '{password}' AND info_usuario.nombreUsuario = '{username}';
+         */
+        $user = DB::table('user')
+            ->join('info_user', 'user.id', '=', 'info_user.id')
+            ->where('nombreUsuario', $data['username'])
+            ->where('contrasena', $data['password'])
+            ->first();
+
         // If the user does not exist, redirect to the login page and show an error message
         if (!$user) {
             return redirect('/login')->with('error', 'El usuario no existe');
