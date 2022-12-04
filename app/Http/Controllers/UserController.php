@@ -30,7 +30,7 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->username != $username) {
+        if (session()->get('user')->nombreUsuario != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
             return redirect('/' . session()->get('user')->username);
         }
@@ -75,7 +75,7 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->username != $username) {
+        if (session()->get('user')->nombreUsuario != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
             return redirect('/' . session()->get('user')->username);
         }
@@ -105,7 +105,7 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->username != $username) {
+        if (session()->get('user')->nombreUsuario != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
             return redirect('/' . session()->get('user')->username);
         }

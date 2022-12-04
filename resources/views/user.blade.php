@@ -19,10 +19,10 @@
                             </svg>
                         </div>
                         <div class="media-body mb-5 text-black">
-                            <a href="/{{$user->username}}/edit" class="btn btn-outline-dark btn-sm btn-block">
+                            <a href="/{{$user->nombreUsuario}}/edit" class="btn btn-outline-dark btn-sm btn-block">
                                 Edit profile
                             </a>
-                            <h4 class="mt-0 mb-0">{{$user->username}}</h4>
+                            <h4 class="mt-0 mb-0">{{$user->nombreUsuario}}</h4>
                             <p class="small mb-4"> <i class="fas fa-map-marker-alt mr-2"></i>Universidad de las Islas Baleares</p>
                         </div>
                     </div>

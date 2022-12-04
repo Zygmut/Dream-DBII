@@ -55,7 +55,7 @@ class LoginController extends Controller
          *    usuario.idUsuario = info_usuario.idUsuario AND usuario.contrasena = '{password}' AND info_usuario.nombreUsuario = '{username}';
          */
         $user = DB::table('usuario')
-            ->join('info_user', 'usuario.idUsuario', '=', 'info_usuario.idUsuario')
+            ->join('info_usuario', 'usuario.idUsuario', '=', 'info_usuario.idUsuario')
             ->where('nombreUsuario', $data['username'])
             ->where('contrasena', $data['password'])
             ->first();
@@ -65,12 +65,12 @@ class LoginController extends Controller
             return redirect('/login')->with('error', 'El usuario no existe');
         }
         // If the user exists, check if the password is correct
-        if ($user->password != $data['password']) {
+        if ($user->contrasena != $data['password']) {
             return redirect('/login')->with('error', 'La contraseña es incorrecta');
         }
         // Create a session with the user data
         session(['user' => $user]);
         // If the password is correct, redirect to {username} page
-        return redirect('/' . $user->username);
+        return redirect('/' . $user->nombreUsuario);
     }
 }

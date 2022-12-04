@@ -62,7 +62,7 @@ class RegisterController extends Controller
         $idPersona = DB::table('persona')->insertGetId([
             'nombre' => $data['nombre'],
             'apellidos' => $data['apellidos'],
-            'telefono' => $data['telefono'],
+            'telef' => $data['telefono'],
             'fechaNacimiento' => $data['fechaNacimiento'],
         ]);
         // Insertar datos en tabla usuario

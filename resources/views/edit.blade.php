@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-12">
             <h1>Edit profile</h1>
-            <form action="/{{ $user->username }}/edit" method="post">
+            <form action="/{{ $user->nombreUsuario }}/edit" method="post">
                 @csrf
                 <div class="form-group
                     @if ($errors->has('nombre'))
@@ -14,7 +14,7 @@
                     @endif
                 ">
                     <label for="nombre">Name</label>
-                    <input type="text" name="nombre" id="nombre" class="form-control" value="{{ $user->nombre }}">
+                    <input type="text" name="nombre" id="nombre" class="form-control" value="{{ $user->nombreUsuario }}">
                     @if ($errors->has('nombre'))
                     <span class="help-block
                             @if ($errors->has('nombre'))
@@ -31,7 +31,7 @@
                     @endif
                 ">
                     <label for="username">Username</label>
-                    <input type="text" name="username" id="username" class="form-control" value="{{ $user->username }}">
+                    <input type="text" name="username" id="username" class="form-control" value="{{ $user->nombreUsuario }}">
                     @if ($errors->has('username'))
                     <span class="help-block
                             @if ($errors->has('username'))

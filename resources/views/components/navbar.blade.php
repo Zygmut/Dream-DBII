@@ -27,7 +27,7 @@
       </ul>
       <span class="navbar-text">
         @if (session()->has('user'))
-        <a href="/{{session('user')->username}}" class="text-white nav-link">{{session('user')->username}}</a>
+        <a href="/{{session('user')->nombreUsuario}}" class="text-white nav-link">{{session('user')->nombreUsuario}}</a>
         @else
         <a href="/login" class="text-white nav-link">Login</a>
         @endif
