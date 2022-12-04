@@ -23,7 +23,7 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('user')->where('username', $username)->first();
+        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
@@ -68,7 +68,7 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('user')->where('username', $username)->first();
+        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
@@ -98,7 +98,7 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('user')->where('username', $username)->first();
+        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
@@ -128,15 +128,15 @@ class UserController extends Controller
         }
 
         // Si ha enviado el formulario correctamente, actualizar los datos del usuario en la base de datos
-        DB::table('user')->where('username', $username)->update([
-            'name' => request()->get('name'),
-            'email' => request()->get('email'),
-            'password' => request()->get('password')
+        DB::table('info_usuario')->where('nombreUsuario', $username)->update([
+            'nombreUsuario' => request()->get('name'),
+            'mail' => request()->get('email'),
+            'constrasena' => request()->get('password')
         ]);
 
         // Actualizar los datos del usuario en la sesión
         session()->flush();
-        session(['user', DB::table('user')->where('username', $username)->first()]);
+        session(['user', DB::table('usuario')->where('username', $username)->first()]);
 
         // Redirigir a la página principal del usuario {username}
         return redirect('/' . $username);

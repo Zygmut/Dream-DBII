@@ -50,7 +50,7 @@ class RegisterController extends Controller
         }
 
         // Comprobar que el nombre de usuario o el mail no está en uso
-        $user = DB::table('usuarios')->where('nombreUsuario', $data['nombreUsuario'])->orWhere('mail', $data['mail'])->first();
+        $user = DB::table('info_usuario')->where('nombreUsuario', $data['nombreUsuario'])->orWhere('mail', $data['mail'])->first();
         if ($user) {
             return redirect('/register')->withErrors([
                 'nombreUsuario' => 'El nombre de usuario o email ya está en uso',

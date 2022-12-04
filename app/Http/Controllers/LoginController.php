@@ -54,8 +54,8 @@ class LoginController extends Controller
          *WHERE 
          *    usuario.idUsuario = info_usuario.idUsuario AND usuario.contrasena = '{password}' AND info_usuario.nombreUsuario = '{username}';
          */
-        $user = DB::table('user')
-            ->join('info_user', 'user.id', '=', 'info_user.id')
+        $user = DB::table('usuario')
+            ->join('info_user', 'usuario.idUsuario', '=', 'info_usuario.idUsuario')
             ->where('nombreUsuario', $data['username'])
             ->where('contrasena', $data['password'])
             ->first();
