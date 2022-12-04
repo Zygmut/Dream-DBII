@@ -7,6 +7,7 @@ USE BD213;
 CREATE TABLE
     persona(
         idPersona BIGINT PRIMARY KEY AUTO_INCREMENT,
+        nombre VARCHAR(255) NOT NULL,
         apellidos VARCHAR(255) NOT NULL,
         telef VARCHAR(255) NOT NULL,
         fechaNacimiento DATETIME
