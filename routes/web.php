@@ -29,10 +29,18 @@ Route::get('/login', 'App\Http\Controllers\LoginController@index');
 Route::post('/login', 'App\Http\Controllers\LoginController@login');
 
 // User page
-Route::get('/{username}', 'App\Http\Controllers\UserController@index');
+Route::get('/{username}/profile', 'App\Http\Controllers\UserController@index');
 
 // User profile edit page
 Route::get('{username}/edit', 'App\Http\Controllers\UserController@edit');
 
 // User profile edit form
 Route::post('{username}/edit', 'App\Http\Controllers\UserController@update');
+
+// User profile feed
+//Route::get('{username}/feed', 'App\Http\Controllers\UserController@feed');
+
+// User profile individual publication
+Route::get('{username}/publication/{idPublicacion}', 'App\Http\Controllers\UserController@publication');
+
+Route::post('{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newComment');
