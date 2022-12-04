@@ -23,8 +23,8 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
-        if (!$user) {
+        $userInfo = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        if (!$userInfo) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
@@ -32,23 +32,25 @@ class UserController extends Controller
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
         if (session()->get('user')->nombreUsuario != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->username);
+            return redirect('/' . session()->get('user')->nombreUsuario);
         }
 
-        // Si es el mismo, redirigir a la página principal del usuario {username}
-        //$publications = DB::table('publication')->where('user_id', $user->id)->get();
-        $publications = [1, 2, 3, 4]; // Temporal
-        // Get length of the publications
+        $publications = DB::table('publicacion')->where('idUsuarioAutor', $userInfo->idUsuario)->orderBy('fecha', 'desc')->get();
         $publicationsLength = count($publications);
-        // Get the user's followers and following from the database
-        $followers = 700;
-        $following = 888;
+
+        $followers = DB::table('usuario')->where('idUsuario', $userInfo->idUsuario)->first()->numSeguidores;
+        $following = DB::table('usuario')->where('idUsuario', $userInfo->idUsuario)->first()->numSeguidos;
+
+        $user = DB::table('usuario')->where('idUsuario', $userInfo->idUsuario)->first();
+
         return view(
             'user',
             [
                 'user' => $user,
+                'userInfo' => $userInfo,
                 'publications' => $publications,
-                'followers' => $followers, 'following' => $following,
+                'followers' => $followers,
+                'following' => $following,
                 'numberPublications' => $publicationsLength
             ]
         );
@@ -77,7 +79,7 @@ class UserController extends Controller
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
         if (session()->get('user')->nombreUsuario != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->username);
+            return redirect('/' . session()->get('user')->username . '/profile');
         }
 
         // Si es el mismo, redirigir a la página de edición de perfil del usuario {username}
@@ -107,7 +109,7 @@ class UserController extends Controller
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
         if (session()->get('user')->nombreUsuario != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->username);
+            return redirect('/' . session()->get('user')->username . '/edit');
         }
 
         // Comprobar que el usuario ha enviado el formulario
@@ -139,6 +141,54 @@ class UserController extends Controller
         session(['user', DB::table('usuario')->where('username', $username)->first()]);
 
         // Redirigir a la página principal del usuario {username}
-        return redirect('/' . $username);
+        return redirect('/' . $username . '/edit');
+    }
+
+    public function publication($username, $idPublicacion)
+    {
+        // Comprobar que el usuario está logueado
+        if (!session()->has('user')) {
+            // Si no está logueado, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        if (!$user) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
+        if (session()->get('user')->nombreUsuario != $username) {
+            // Si no es el mismo, redirigir a la página principal del usuario logueado
+            return redirect('/' . session()->get('user')->username);
+        }
+
+        // Comprobar que la publicación existe
+        $publication = DB::table('publicacion')->where('idPublicacion', $idPublicacion)->first();
+        if (!$publication) {
+            // Si no existe, redirigir a la página principal del usuario {username}
+            return redirect('/' . $username . '/profile');
+        }
+
+        // Obtener los comentarios de la publicación y los datos de los usuarios, junto a sus fotos de perfil
+        $comments = DB::table('comentario')
+            ->join('info_usuario', 'comentario.idUsuario', '=', 'info_usuario.idUsuario')
+            ->join('usuario', 'info_usuario.idUsuario', '=', 'usuario.idUsuario')
+            ->where('idPublicacion', $idPublicacion)
+            ->get();
+        $numOfComments = count($comments);
+
+        // Si existe, redirigir a la página de la publicación
+        return view(
+            'userpublication',
+            [
+                'publication' => $publication,
+                'user' => $user,
+                'comments' => $comments,
+                'numOfComments' => $numOfComments
+            ]
+        );
     }
 }

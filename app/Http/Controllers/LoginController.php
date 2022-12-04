@@ -19,7 +19,7 @@ class LoginController extends Controller
         // Comprobar que el usuario está logueado
         if (Session::has('user')) {
             // Si está logueado, redirigir la página principal del usuario {username}
-            return redirect('/' . session()->get('user')->username);
+            return redirect('/' . session()->get('user')->nombreUsuario . '/profile');
         }
         // Si no está logueado, redirigir a la página de login
         return view('login');
@@ -71,6 +71,6 @@ class LoginController extends Controller
         // Create a session with the user data
         session(['user' => $user]);
         // If the password is correct, redirect to {username} page
-        return redirect('/' . $user->nombreUsuario);
+        return redirect('/' . $user->nombreUsuario . '/profile');
     }
 }
