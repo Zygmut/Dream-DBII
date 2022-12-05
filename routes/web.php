@@ -43,4 +43,14 @@ Route::post('{username}/edit', 'App\Http\Controllers\UserController@update');
 // User profile individual publication
 Route::get('{username}/publication/{idPublicacion}', 'App\Http\Controllers\UserController@publication');
 
+// TODO
 Route::post('{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newComment');
+
+// TODO
+Route::get('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers\PublicationController@edit');
+
+// TODO
+Route::get('/{username}', 'App\Http\Controllers\UserFeedController@index');
+
+// Logout
+Route::get('/logout', 'App\Http\Controllers\LoginController@logout');

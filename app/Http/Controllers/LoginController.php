@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 
 class LoginController extends Controller
@@ -72,5 +73,13 @@ class LoginController extends Controller
         session(['user' => $user]);
         // If the password is correct, redirect to {username} page
         return redirect('/' . $user->nombreUsuario . '/profile');
+    }
+
+    public function logout()
+    {
+        // Delete the session
+        session()->forget(['user']);
+        // Redirect to the login page
+        return redirect('/hello');
     }
 }
