@@ -56,4 +56,13 @@ Route::get('/{username}', 'App\Http\Controllers\UserFeedController@index');
 Route::get('/logout', 'App\Http\Controllers\LoginController@logout');
 
 // Create a new publication
-Route::post('/publication/new', 'App\Http\Controllers\PublicationController@newPublication');
+Route::post('/publication/new/{idUsuario}', 'App\Http\Controllers\PublicationController@newPublication');
+
+// Create a new publication page
+Route::get('/publication/new', 'App\Http\Controllers\PublicationController@index');
+
+// User settings page
+Route::get('/{username}/settings', 'App\Http\Controllers\UserSettingsController@index');
+
+// User settings form
+Route::post('/{username}/settings', 'App\Http\Controllers\UserSettingsController@update');
