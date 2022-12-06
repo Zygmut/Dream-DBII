@@ -18,11 +18,19 @@
               active
             @endif" href="#">Inbox</a>
         </li>
+        @if (session()->has('user'))
         <li class="nav-item">
           <a class="nav-link
             @if (Request::is('/settings'))
               active
-            @endif" href="#">Settings</a>
+            @endif" href="/{{session('user')->nombreUsuario}}/settings">Settings</a>
+        </li>
+        @endif
+        <li class="nav-item">
+          <a class="nav-link
+            @if (Request::is('/publication/new'))
+              active
+            @endif" href="/publication/new">Nueva publicacion</a>
         </li>
       </ul>
       <span class="navbar-text">
