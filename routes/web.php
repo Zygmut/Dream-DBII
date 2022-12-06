@@ -54,3 +54,6 @@ Route::get('/{username}', 'App\Http\Controllers\UserFeedController@index');
 
 // Logout
 Route::get('/logout', 'App\Http\Controllers\LoginController@logout');
+
+// Create a new publication
+Route::post('/publication/new', 'App\Http\Controllers\PublicationController@newPublication');

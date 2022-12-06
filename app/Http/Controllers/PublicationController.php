@@ -13,4 +13,8 @@ class PublicationController extends Controller
     {
         // TODO: Implementar
     }
+
+    public function newPublication(){
+        
+    }
 }
