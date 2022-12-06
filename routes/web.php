@@ -49,7 +49,7 @@ Route::post('{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controll
 // TODO
 Route::get('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers\PublicationController@edit');
 
-// TODO
+// Publicaciones de los usuarios que sigue el usuario logueado
 Route::get('/{username}', 'App\Http\Controllers\UserFeedController@index');
 
 // Logout
