@@ -1,0 +1,17 @@
+-- Procedure backup
+
+DELIMITER //
+
+CREATE PROCEDURE BACKUP() BEGIN 
+	START TRANSACTION;
+	DECLARE cursor CURSOR FOR CREATE DATABASE {bd213_fecha};
+	CREATE TABLE ... 
+    INSERT ... 
+END; 
+
+-- Evento backup
+
+CREATE EVENT
+    copia_seguridad ON SCHEDULE EVERY '1' DAY STARTS '2022-12-11 00:00:00'
+DO
+CALL backup();

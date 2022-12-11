@@ -35,7 +35,7 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    usuario_usario(
+    usuario_usuario(
         idUsuarioSeguido BIGINT,
         IdUsuarioSeguidor BIGINT,
         PRIMARY KEY (
