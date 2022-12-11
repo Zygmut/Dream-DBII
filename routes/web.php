@@ -66,3 +66,6 @@ Route::get('/{username}/settings', 'App\Http\Controllers\UserSettingsController@
 
 // User settings form
 Route::post('/{username}/settings', 'App\Http\Controllers\UserSettingsController@update');
+
+// User notifications page !(TODO)
+Route::get('/{username}/notifications', 'App\Http\Controllers\UserNotificationsController@index');
