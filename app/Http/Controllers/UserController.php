@@ -11,7 +11,7 @@ class UserController extends Controller
 
     /**
      * Redireccionamiento de la página principal del usuario {username}
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index($username)
@@ -23,25 +23,25 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $userInfo = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $userInfo = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$userInfo) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->nombreUsuario != $username) {
+        if (session()->get('user')->nom_usu != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->nombreUsuario);
+            return redirect('/' . session()->get('user')->nom_usu);
         }
 
-        $publications = DB::table('publicacion')->where('idUsuarioAutor', $userInfo->idUsuario)->orderBy('fecha', 'desc')->get();
+        $publications = DB::table('publicacion')->where('autor', $userInfo->id_usu)->orderBy('fecha_pub', 'desc')->get();
         $publicationsLength = count($publications);
 
-        $followers = DB::table('usuario')->where('idUsuario', $userInfo->idUsuario)->first()->numSeguidores;
-        $following = DB::table('usuario')->where('idUsuario', $userInfo->idUsuario)->first()->numSeguidos;
+        $followers = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first()->seguidores;
+        $following = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first()->seguidos;
 
-        $user = DB::table('usuario')->where('idUsuario', $userInfo->idUsuario)->first();
+        $user = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first();
 
         return view(
             'user',

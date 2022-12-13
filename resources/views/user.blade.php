@@ -19,10 +19,10 @@
                             </svg>
                         </div>
                         <div class="media-body mb-5 text-black">
-                            <a href="/{{$userInfo->nombreUsuario}}/edit" class="btn btn-outline-dark btn-sm btn-block">
+                            <a href="/{{$userInfo->nom_usu}}/edit" class="btn btn-outline-dark btn-sm btn-block">
                                 Edit profile
                             </a>
-                            <h4 class="mt-0 mb-0">{{$userInfo->nombreUsuario}}</h4>
+                            <h4 class="mt-0 mb-0">{{$userInfo->nom_usu}}</h4>
                             <p class="small mb-4"> <i class="fas fa-map-marker-alt mr-2"></i>Universidad de las Islas Baleares</p>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                 <div class="col-sm-4 px-4 py-3 d-flex flex-column justify-content-center align-items-center">
                     <h5 class="mb-0">Bio</h5>
                     <div class="p-4 bg-light">
-                        <p class="font-italic mb-0">{{$user->descripcion}}</p>
+                        <p class="font-italic mb-0">{{$user->description}}</p>
                     </div>
                 </div>
             </div>

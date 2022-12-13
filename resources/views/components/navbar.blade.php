@@ -23,7 +23,7 @@
           <a class="nav-link
             @if (Request::is('/settings'))
               active
-            @endif" href="/{{session('user')->nombreUsuario}}/settings">Settings</a>
+            @endif" href="/{{session('user')->nom_usu}}/settings">Settings</a>
         </li>
         @endif
         <li class="nav-item">
@@ -35,7 +35,7 @@
       </ul>
       <span class="navbar-text">
         @if (session()->has('user'))
-        <a href="/{{session('user')->nombreUsuario}}/profile" class="text-white nav-link">{{session('user')->nombreUsuario}}</a>
+        <a href="/{{session('user')->nom_usu}}/profile" class="text-white nav-link">{{session('user')->nom_usu}}</a>
         @else
         <a href="/login" class="text-white nav-link">Login</a>
         @endif

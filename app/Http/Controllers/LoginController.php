@@ -12,7 +12,7 @@ class LoginController extends Controller
 {
     /**
      * Redireccionamiento de la página de login
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -28,7 +28,7 @@ class LoginController extends Controller
 
     /**
      * Validación de los datos del formulario de login
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function login()
@@ -46,19 +46,19 @@ class LoginController extends Controller
         }
         /**
          * Obtener usuario de la siguiente consulta
-         * 
+         *
          * SELECT
          *     *
          *FROM
          *    usuario,
          *    info_usuario
-         *WHERE 
+         *WHERE
          *    usuario.idUsuario = info_usuario.idUsuario AND usuario.contrasena = '{password}' AND info_usuario.nombreUsuario = '{username}';
          */
         $user = DB::table('usuario')
-            ->join('info_usuario', 'usuario.idUsuario', '=', 'info_usuario.idUsuario')
-            ->where('nombreUsuario', $data['username'])
-            ->where('contrasena', $data['password'])
+            ->join('info_usu', 'usuario.id_usu', '=', 'info_usu.id_usu')
+            ->where('nom_usu', $data['username'])
+            ->where('pass', $data['password'])
             ->first();
 
         // If the user does not exist, redirect to the login page and show an error message
@@ -66,13 +66,13 @@ class LoginController extends Controller
             return redirect('/login')->with('error', 'El usuario no existe');
         }
         // If the user exists, check if the password is correct
-        if ($user->contrasena != $data['password']) {
+        if ($user->pass != $data['password']) {
             return redirect('/login')->with('error', 'La contraseña es incorrecta');
         }
         // Create a session with the user data
         session(['user' => $user]);
         // If the password is correct, redirect to {username} page
-        return redirect('/' . $user->nombreUsuario . '/profile');
+        return redirect('/' . $user->nom_usu. '/profile');
     }
 
     public function logout()
