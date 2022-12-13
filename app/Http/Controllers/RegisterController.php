@@ -11,7 +11,7 @@ class RegisterController extends Controller
 {
     /**
      * Redireccionamiento de la página de registro
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -27,58 +27,72 @@ class RegisterController extends Controller
 
     /**
      * Validación de los datos del formulario de registro
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function register()
     {
         // Get the data from the form
         $data = request()->all();
+
         // Validate the data
         $validation = Validator::make($data, [
             'nombre' => 'required | max:50 | min:3 | regex:/^[a-zA-Z]+$/',
             'apellidos' => 'required | max:255 | regex:/^[a-zA-Z ]+$/',
             'telefono' => 'required | max:9 | min:9 | regex:/^[0-9]+$/',
             'fechaNacimiento' => 'required | date',
+            'dni' => 'required | max:9 | min:9 | regex:/[0-9]{8}[a-zA-Z]{1}/',
             'mail' => 'required | email | max:255',
             'nombreUsuario' => 'required | max:255 | min:3 | regex:/^[a-zA-Z0-9]+$/',
             'contrasena' => 'required | max:255 | min:3 | regex:/^[a-zA-Z0-9]+$/',
         ]);
+
         // If the validation fails, redirect to the register page
         if ($validation->fails()) {
             return redirect('/register')->withErrors($validation);
         }
 
         // Comprobar que el nombre de usuario o el mail no está en uso
-        $user = DB::table('info_usuario')->where('nombreUsuario', $data['nombreUsuario'])->orWhere('mail', $data['mail'])->first();
-        if ($user) {
+        if (DB::table('info_usu')->where('nom_usu', $data['nombreUsuario'])->first()){
             return redirect('/register')->withErrors([
-                'nombreUsuario' => 'El nombre de usuario o email ya está en uso',
-                'email' => 'El nombre de usuario o email ya está en uso'
+                'nombreUsuario' => 'El nombre de usuario ya está en uso'
+            ]);
+        }
+        if (DB::table('info_usu')->where('mail', $data['mail'])->first()){
+            return redirect('/register')->withErrors([
+                'email' => 'El email ya está en uso'
+            ]);
+        }
+        if (DB::table('info_usu')->where('id_usu', $data['dni'])->first()){
+            return redirect('/register')->withErrors([
+                'dni' => 'El dni ya está en uso'
             ]);
         }
 
         // Insertar datos en tabla persona
-        $idPersona = DB::table('persona')->insertGetId([
-            'nombre' => $data['nombre'],
+        DB::table('persona')->insert([
+            'dni' => $data['dni'],
+            'nom_per' => $data['nombre'],
             'apellidos' => $data['apellidos'],
-            'telef' => $data['telefono'],
-            'fechaNacimiento' => $data['fechaNacimiento'],
+            'telf' => $data['telefono'],
+            'nacimiento' => $data['fechaNacimiento'],
         ]);
+
         // Insertar datos en tabla usuario
-        $idUser = DB::table('usuario')->insertGetId([
-            'contrasena' => $data['contrasena'],
-            'descripcion' => 'Hola, soy ' . $data['nombreUsuario'],
-            'numSeguidores' => 0,
-            'numSeguidos' => 0,
-            'fotoPerfil' => 'default.jpg', // Mirar como subir una imagen por defecto a la base de datos
-            'idPersona' => $idPersona
+        DB::table('usuario')->insert([
+            'id_usu' => $data['dni'],
+            'pass' => $data['contrasena'],
+            'description' => 'Hola, soy ' . $data['nombreUsuario'],
+            'seguidores' => 0,
+            'seguidos' => 0,
+            'foto_perfil' => 'default.jpg' // Mirar como subir una imagen por defecto a la base de datos
         ]);
+
         // Insertar datos en tabla info_usuario
-        DB::table('info_usuario')->insert([
-            'nombreUsuario' => $data['nombreUsuario'],
-            'mail' => $data['mail'],
-            'idUsuario' => $idUser
+        DB::table('info_usu')->insert([
+            'id_usu' => $data['dni'],
+            'nom_usu' => $data['nombreUsuario'],
+            'mail' => $data['mail']
         ]);
 
         // Redirigir a la página de login

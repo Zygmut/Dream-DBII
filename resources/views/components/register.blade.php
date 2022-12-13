@@ -16,11 +16,15 @@
                 </div>
                 <div class="mb-3">
                     <label for="telefono" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Introduzca un teléfono">
+                    <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Introduzca un teléfono" maxlength="9">
                 </div>
                 <div class="mb-3">
                     <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
                     <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
+                </div>
+                <div class="mb-3">
+                    <label for="dni" class="form-label">DNI</label>
+                    <input type="dni" class="form-control" id="dni" name="dni" placeholder="Introduzca su dni" maxlength="9">
                 </div>
                 <div class="mb-3">
                     <label for="mail" class="form-label">Email</label>
@@ -56,6 +60,17 @@
                     {{ session('error') }}
                 </div>
                 @endif
+                
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+                
             </form>
         </div>
     </div>
