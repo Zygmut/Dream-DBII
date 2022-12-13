@@ -32,7 +32,7 @@ class UserNotificationsController extends Controller
             'notifications',
             [
                 'user' => $user,
-                'notifications' => $notifications,
+                'notifications' => "",
             ]
         );
     }

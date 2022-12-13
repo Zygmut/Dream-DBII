@@ -16,18 +16,18 @@ class UserFeedController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
 
         // Obtener las publicaciones de los usuarios que sigue el usuario logueado
         $publications = DB::table('usuario')
-            ->join('info_usuario', 'usuario.idUsuario', '=', 'info_usuario.idUsuario')
-            ->join('usuario_usario', 'usuario.idUsuario', '=', 'usuario_usario.idUsuarioSeguidor')
-            ->join('publicacion', 'usuario_usario.idUsuarioSeguido', '=', 'publicacion.idUsuarioAutor')
-            ->orderBy('publicacion.fecha', 'desc')
-            ->where('usuario.idUsuario', session()->get('user')->idUsuario)
+            ->join('info_usu', 'usuario.id_usu', '=', 'info_usu.id_usu')
+            ->join('usu_usu', 'usuario.id_usu', '=', 'usu_usu.seguidor')
+            ->join('publicacion', 'usu_usu.seguido', '=', 'publicacion.autor')
+            ->orderBy('publicacion.fecha_pub', 'desc')
+            ->where('usuario.id_usu', session()->get('user')->id_usu)
             ->get();
 
         $comments = [];

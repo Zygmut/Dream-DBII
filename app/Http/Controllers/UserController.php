@@ -100,14 +100,14 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->nombreUsuario != $username) {
+        if (session()->get('user')->nom_usu != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
             return redirect('/' . session()->get('user')->username . '/edit');
         }
@@ -153,20 +153,20 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->nombreUsuario != $username) {
+        if (session()->get('user')->nom_usu != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->username);
+            return redirect('/' . session()->get('user')->nom_usu );
         }
 
         // Comprobar que la publicación existe
-        $publication = DB::table('publicacion')->where('idPublicacion', $idPublicacion)->first();
+        $publication = DB::table('publicacion')->where('id_pub', $idPublicacion)->first();
         if (!$publication) {
             // Si no existe, redirigir a la página principal del usuario {username}
             return redirect('/' . $username . '/profile');
@@ -174,9 +174,9 @@ class UserController extends Controller
 
         // Obtener los comentarios de la publicación y los datos de los usuarios, junto a sus fotos de perfil
         $comments = DB::table('comentario')
-            ->join('info_usuario', 'comentario.idUsuario', '=', 'info_usuario.idUsuario')
-            ->join('usuario', 'info_usuario.idUsuario', '=', 'usuario.idUsuario')
-            ->where('idPublicacion', $idPublicacion)
+            ->join('info_usu', 'comentario.id_usu', '=', 'info_usu.id_usu')
+            ->join('usuario', 'info_usu.id_usu', '=', 'usuario.id_usu')
+            ->where('id_pub', $idPublicacion)
             ->get();
         $numOfComments = count($comments);
 

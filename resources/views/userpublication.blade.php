@@ -1,4 +1,4 @@
-@extends('layouts.base', ['title' => $user->nombreUsuario])
+@extends('layouts.base', ['title' => $user->nom_usu])
 
 @section('content')
 <div class="d-flex justify-content-center align-items-center mt-2 pt-2">

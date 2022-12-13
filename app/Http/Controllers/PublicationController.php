@@ -17,10 +17,10 @@ class PublicationController extends Controller
         }
 
         // Obtenemos el usuario logueado
-        $username = Session::get('user')->nombreUsuario;
+        $username = Session::get('user')->nom_usu;
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
@@ -41,7 +41,7 @@ class PublicationController extends Controller
         }
 
         // Comprobamos que el usuario que está intentando crear una publicación es el mismo que está logueado
-        if (Session::get('user')->idUsuario != $idUsuario) {
+        if (Session::get('user')->id_usu != $idUsuario) {
             return redirect('/login');
         }
 
@@ -65,12 +65,12 @@ class PublicationController extends Controller
         // Insert into 'publicacion' (idUsuarioAutor, descripcion, contenido, fecha)
         // values (idUsuario, descripcion, contenido, fecha)
         DB::table('publicacion')->insert([
-            'idUsuarioAutor' => $idUsuario,
-            'descripcion' => request()->descripcion,
-            'contenido' => $base64,
-            'fecha' => date('Y-m-d H:i:s'),
+            'autor' => $idUsuario,
+            'desc_pub' => request()->descripcion,
+            'cont_pub' => $base64,
+            'fecha_pub' => date('Y-m-d H:i:s'),
         ]);
 
-        return redirect('/' . Session::get('user')->nombreUsuario . '/profile');
+        return redirect('/' . Session::get('user')->nom_usu. '/profile');
     }
 }

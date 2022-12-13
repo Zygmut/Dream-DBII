@@ -18,7 +18,7 @@
                         @endforeach
                     </ul>
                     @endif
-                    <form class="form-horizontal" method="POST" action="/publication/new/{{ session()->get('user')->idUsuario }}" enctype="multipart/form-data">
+                    <form class="form-horizontal" method="POST" action="/publication/new/{{ session()->get('user')->id_usu}}" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         <div class="form-group
                                 @if ($errors->has('title'))

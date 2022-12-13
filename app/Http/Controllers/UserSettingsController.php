@@ -57,14 +57,14 @@ class UserSettingsController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
 
         // Comprobamos que el usuario que está intentando modificar sus datos es el mismo que está logueado
-        if (Session::get('user')->idUsuario != $user->idUsuario) {
-            return redirect('/user/' . Session::get('user')->nombreUsuario . '/settings');
+        if (Session::get('user')->id_usu != $user->idUsuario) {
+            return redirect('/user/' . Session::get('user')->nom_usu. '/settings');
         }
 
         // Validamos los datos
@@ -83,31 +83,31 @@ class UserSettingsController extends Controller
         }
 
         $idPersona = DB::table('usuario')
-            ->where('idUsuario', $user->idUsuario)
+            ->where('id_usu', $user->id_usu)
             ->first()
-            ->idPersona;
+            ->dni;
 
         // Actualizamos los datos del usuario (persona, usuario, info_usuario)        
         DB::table('persona')
-            ->where('idPersona', $idPersona)
+            ->where('id_per', $idPersona)
             ->update([
-                'nombre' => request()->nombre,
+                'nom_per' => request()->nombre,
                 'apellidos' => request()->apellidos,
-                'telef' => request()->telefono,
+                'telf' => request()->telefono,
             ]);
 
         DB::table('usuario')
-            ->where('idUsuario', $user->idUsuario)
+            ->where('id_usu', $user->id_usu)
             ->update([
-                'descripcion' => request()->descripcion
+                'description' => request()->descripcion
                 //'fotoPerfil' => request()->fotoPerfil
             ]);
 
-        DB::table('info_usuario')
-            ->where('idUsuario', $user->idUsuario)
+        DB::table('info_usu')
+            ->where('id_usu', $user->id_usu)
             ->update([
                 'mail' => request()->mail,
-                'nombreUsuario' => request()->nombreUsuario
+                'nom_usu' => request()->nombreUsuario
             ]);
 
         return redirect('/user/' . $username . '/settings');

@@ -54,8 +54,8 @@
                 <div class="row">
                     @foreach($publications as $publication)
                     <div class="col-lg-6 mb-2 pr-lg-1">
-                        <a href="/{{$userInfo->nombreUsuario}}/publication/{{$publication->idPublicacion}}">
-                            <img src="data:image/png;base64,{{base64_encode($publication->contenido)}}" alt="publicaciones" class="img-fluid rounded shadow-sm">
+                        <a href="/{{$userInfo->nom_usu}}/publication/{{$publication->id_pub}}">
+                            <img src="data:image/png;base64,{{base64_encode($publication->cont_pub)}}" alt="publicaciones" class="img-fluid rounded shadow-sm">
                         </a>
                     </div>
                     @endforeach
