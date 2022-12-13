@@ -1,10 +1,10 @@
 @extends('layouts.base', ['title' => 'Settings'])
 
 @section('content')
-{{$userInfo->nombreUsuario}}
-{{$userInfo->nombre}}
+{{$userInfo->nom_usu}}
+{{$userInfo->nom_per}}
 {{$userInfo->apellidos}}
 {{$userInfo->mail}}
-{{$userInfo->fechaNacimiento}}
-{{$userInfo->descripcion}}
+{{$userInfo->nacimiento}}
+{{$userInfo->description}}
 @endsection

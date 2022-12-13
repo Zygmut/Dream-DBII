@@ -70,16 +70,16 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
 
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->nombreUsuario != $username) {
+        if (session()->get('user')->nom_usu != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->username . '/profile');
+            return redirect('/' . session()->get('user')->nom_usu. '/profile');
         }
 
         // Si es el mismo, redirigir a la página de edición de perfil del usuario {username}

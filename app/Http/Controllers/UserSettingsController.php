@@ -16,13 +16,13 @@ class UserSettingsController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
 
         // Comprobamos que el usuario que está intentando modificar sus datos es el mismo que está logueado
-        if (Session::get('user')->idUsuario != $user->idUsuario) {
+        if (Session::get('user')-> id_usu != $user->id_usu) {
             return redirect('/login');
         }
 
@@ -36,9 +36,9 @@ class UserSettingsController extends Controller
          *JOIN info_usuario ON info_usuario.idUsuario = usuario.idUsuario
          */
         $userInfo = DB::table('persona')
-            ->join('usuario', 'usuario.idPersona', '=', 'persona.idPersona')
-            ->join('info_usuario', 'info_usuario.idUsuario', '=', 'usuario.idUsuario')
-            ->where('info_usuario.nombreUsuario', $username)
+            ->join('usuario', 'usuario.id_usu', '=', 'persona.dni')
+            ->join('info_usu', 'info_usu.id_usu', '=', 'usuario.id_usu')
+            ->where('info_usu.nom_usu', $username)
             ->first();
 
         return view(
