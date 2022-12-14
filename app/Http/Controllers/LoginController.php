@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 
@@ -20,7 +21,7 @@ class LoginController extends Controller
         // Comprobar que el usuario está logueado
         if (Session::has('user')) {
             // Si está logueado, redirigir la página principal del usuario {username}
-            return redirect('/' . session()->get('user')->nom_usu. '/profile');
+            return redirect('/' . session()->get('user')->nom_usu . '/profile');
         }
         // Si no está logueado, redirigir a la página de login
         return view('login');
@@ -42,8 +43,9 @@ class LoginController extends Controller
         ]);
         // If the validation fails, redirect to the login page
         if ($validation->fails()) {
-            return redirect('/login')->withErrors($validation);
+           return redirect('/login')->withErrors($validation);
         }
+
         /**
          * Obtener usuario de la siguiente consulta
          *
@@ -72,7 +74,7 @@ class LoginController extends Controller
         // Create a session with the user data
         session(['user' => $user]);
         // If the password is correct, redirect to {username} page
-        return redirect('/' . $user->nom_usu. '/profile');
+        return redirect('/' . $user->nom_usu . '/profile');
     }
 
     public function logout()
