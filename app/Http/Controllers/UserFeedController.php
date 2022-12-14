@@ -35,7 +35,7 @@ class UserFeedController extends Controller
         $numComments = 0;
 
         return view(
-            'userfeed',
+            'user.userfeed',
             [
                 'user' => $user,
                 'publications' => $publications,

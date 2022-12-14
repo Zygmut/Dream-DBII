@@ -65,11 +65,11 @@ class LoginController extends Controller
 
         // If the user does not exist, redirect to the login page and show an error message
         if (!$user) {
-            return redirect('/login')->with('error', 'El usuario no existe');
+            return redirect('/login')->withErrors('error', 'El usuario no existe');
         }
         // If the user exists, check if the password is correct
         if ($user->pass != $data['password']) {
-            return redirect('/login')->with('error', 'La contraseña es incorrecta');
+            return redirect('/login')->withErrors('error', 'La contraseña es incorrecta');
         }
         // Create a session with the user data
         session(['user' => $user]);
@@ -82,6 +82,6 @@ class LoginController extends Controller
         // Delete the session
         session()->forget(['user']);
         // Redirect to the login page
-        return redirect('/hello');
+        return redirect('/');
     }
 }

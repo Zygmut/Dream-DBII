@@ -22,7 +22,7 @@ class UserSettingsController extends Controller
         }
 
         // Comprobamos que el usuario que está intentando modificar sus datos es el mismo que está logueado
-        if (Session::get('user')-> id_usu != $user->id_usu) {
+        if (Session::get('user')->id_usu != $user->id_usu) {
             return redirect('/login');
         }
 
@@ -42,7 +42,7 @@ class UserSettingsController extends Controller
             ->first();
 
         return view(
-            'usersettings',
+            'user.usersettings',
             [
                 'userInfo' => $userInfo
             ]
@@ -63,43 +63,53 @@ class UserSettingsController extends Controller
         }
 
         // Comprobamos que el usuario que está intentando modificar sus datos es el mismo que está logueado
-        if (Session::get('user')->id_usu != $user->idUsuario) {
-            return redirect('/user/' . Session::get('user')->nom_usu. '/settings');
+        if (Session::get('user')->id_usu != $user->id_usu) {
+            return redirect('/' . Session::get('user')->nom_usu . '/settings');
         }
 
         // Validamos los datos
         $validator = Validator::make(request()->all(), [
-            'nombre' => 'required | max:255',
+            'nom_per' => 'required | max:255',
             'apellidos' => 'required | max:255',
-            'nombreUsuario' => 'required | max:255',
+            'nom_usu' => 'required | max:255',
             'mail' => 'required | email | max:255',
-            'telefono' => 'required | max:255',
-            'fechaNacimiento' => 'required | date',
-            'descripcion' => 'required | max:255',
+            'telf' => 'required | max:255',
+            'nacimiento' => 'required | date',
+            'description' => 'required | max:256',
         ]);
 
         if ($validator->fails()) {
-            return redirect('/user/' . $username . '/settings')->withErrors($validator);
+            return redirect('/' . $username . '/settings')->withErrors($validator);
+        }
+
+        if (request()->nom_usu != $username) {
+            // Comprobamos que el nombre de usuario no esté en uso
+            $userExists = DB::table('info_usu')
+                ->where('nom_usu', '=', request()->nom_usu)
+                ->first();
+            if ($userExists) {
+                return redirect('/' . $username . '/settings')->withErrors(['nom_usu' => 'El nombre de usuario ya está en uso']);
+            }
         }
 
         $idPersona = DB::table('usuario')
             ->where('id_usu', $user->id_usu)
             ->first()
-            ->dni;
+            ->id_usu;
 
         // Actualizamos los datos del usuario (persona, usuario, info_usuario)        
         DB::table('persona')
-            ->where('id_per', $idPersona)
+            ->where('dni', $idPersona)
             ->update([
-                'nom_per' => request()->nombre,
+                'nom_per' => request()->nom_per,
                 'apellidos' => request()->apellidos,
-                'telf' => request()->telefono,
+                'telf' => request()->telf,
             ]);
 
         DB::table('usuario')
             ->where('id_usu', $user->id_usu)
             ->update([
-                'description' => request()->descripcion
+                'description' => request()->description,
                 //'fotoPerfil' => request()->fotoPerfil
             ]);
 
@@ -107,9 +117,9 @@ class UserSettingsController extends Controller
             ->where('id_usu', $user->id_usu)
             ->update([
                 'mail' => request()->mail,
-                'nom_usu' => request()->nombreUsuario
+                'nom_usu' => request()->nom_usu
             ]);
 
-        return redirect('/user/' . $username . '/settings');
+        return redirect('/' . request()->nom_usu . '/profile');
     }
 }

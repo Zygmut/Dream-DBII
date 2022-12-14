@@ -95,7 +95,15 @@ class RegisterController extends Controller
             'mail' => $data['mail']
         ]);
 
-        // Redirigir a la página de login
-        return redirect('/login');
+        // Coger user de la base de datos para crear la sesión
+        $user = DB::table('usuario')
+            ->join('info_usu', 'usuario.id_usu', '=', 'info_usu.id_usu')
+            ->where('nom_usu', $data['nombreUsuario'])
+            ->where('pass', $data['contrasena'])
+            ->first();
+
+        session(['user' => $user]);
+        // If the password is correct, redirect to {username} page
+        return redirect('/' . $user->nom_usu . '/profile');
     }
 }

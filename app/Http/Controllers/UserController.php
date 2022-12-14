@@ -28,11 +28,10 @@ class UserController extends Controller
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
-
+        $isOwner = true;
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
         if (session()->get('user')->nom_usu != $username) {
-            // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->nom_usu);
+            $isOwner = false;
         }
 
         $publications = DB::table('publicacion')->where('autor', $userInfo->id_usu)->orderBy('fecha_pub', 'desc')->get();
@@ -42,23 +41,26 @@ class UserController extends Controller
         $following = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first()->seguidos;
 
         $user = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first();
+        $per = DB::table('persona')->where('dni', $user->id_usu)->first();
 
         return view(
-            'user',
+            'user.user',
             [
                 'user' => $user,
+                'per' => $per,
                 'userInfo' => $userInfo,
                 'publications' => $publications,
                 'followers' => $followers,
                 'following' => $following,
-                'numberPublications' => $publicationsLength
+                'numberPublications' => $publicationsLength,
+                'isOwner' => $isOwner,
             ]
         );
     }
 
     /**
      * Redireccionamiento de la página de edición de perfil
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit($username)
@@ -75,15 +77,41 @@ class UserController extends Controller
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
-
         // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
         if (session()->get('user')->nom_usu != $username) {
             // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->nom_usu. '/profile');
+            return redirect('/' . session()->get('user')->nom_usu);
         }
 
-        // Si es el mismo, redirigir a la página de edición de perfil del usuario {username}
-        return view('edit', ['user' => $user]);
+        return view(
+            'user.edit',
+            [
+                'user' => $user,
+            ]
+        );
+    }
+
+    public function followManagement($username){
+         // Comprobar que el usuario está logueado
+        if (!session()->has('user')) {
+            // Si no está logueado, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+        // Algoritmo
+        /*
+        Si el usuario es == al owner
+            no mostrar botón
+        Si no
+            mostrar botón
+                El valor del botón y su funcionalidad depende de si le sigue o no (QUERY aunque con un estado molaría más truly)
+        */    
     }
 
     /**
@@ -141,7 +169,7 @@ class UserController extends Controller
         session(['user', DB::table('usuario')->where('username', $username)->first()]);
 
         // Redirigir a la página principal del usuario {username}
-        return redirect('/' . $username . '/edit');
+        return redirect('/' . $username . '/settings');
     }
 
     public function publication($username, $idPublicacion)
@@ -157,12 +185,6 @@ class UserController extends Controller
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
-        }
-
-        // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
-        if (session()->get('user')->nom_usu != $username) {
-            // Si no es el mismo, redirigir a la página principal del usuario logueado
-            return redirect('/' . session()->get('user')->nom_usu );
         }
 
         // Comprobar que la publicación existe
@@ -182,7 +204,7 @@ class UserController extends Controller
 
         // Si existe, redirigir a la página de la publicación
         return view(
-            'userpublication',
+            'user.userpublication',
             [
                 'publication' => $publication,
                 'user' => $user,

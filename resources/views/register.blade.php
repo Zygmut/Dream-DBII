@@ -8,7 +8,7 @@
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-                    <div class="card border-0 shadow rounded-3 my-5">
+                    <div class="card border-0 shadow-lg rounded-3 my-5 bg-light">
                         <div class="card-body p-4 p-sm-5">
                             <h1 class="card-title text-center mb-5 fs-5 ">Registro</h1>
                             <form action="/register" method="POST">
@@ -79,6 +79,14 @@
                 </div>
             </div>
         </div>
-        </div>
+        @if ($errors->any())
+            <div class="alert alert-danger" role="alert">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </section>
 @endsection

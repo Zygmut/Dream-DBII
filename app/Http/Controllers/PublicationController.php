@@ -56,21 +56,25 @@ class PublicationController extends Controller
         }
 
         // NO FUNCIONA, FALTA SOLUCIONAR COMO OBTENER LA IMAGEN Y GURADARLA EN BASE64
-        
+
         // Save the image from the content of the request into a blob in the database in base64
         $image = request()->file('contenido');
-        $base64 = base64_encode($image->getContent());
-        
+        $image_cont = $image->openFile()->fread($image->getSize());
 
         // Insert into 'publicacion' (idUsuarioAutor, descripcion, contenido, fecha)
         // values (idUsuario, descripcion, contenido, fecha)
         DB::table('publicacion')->insert([
             'autor' => $idUsuario,
             'desc_pub' => request()->descripcion,
-            'cont_pub' => $base64,
+            'cont_pub' => $image_cont,
             'fecha_pub' => date('Y-m-d H:i:s'),
         ]);
-
-        return redirect('/' . Session::get('user')->nom_usu. '/profile');
+        //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
+        DB::table('mensaje')->insert([
+            'id_usu' =>$idUsuario,
+            'cont_men'=> "Nueva Publicación!",
+            'fecha_men' => date('Y-m-d H:i:s'),
+        ]);
+        return redirect('/' . Session::get('user')->nom_usu . '/profile');
     }
 }

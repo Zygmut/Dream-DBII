@@ -21,15 +21,16 @@ class UserNotificationsController extends Controller
             return redirect('/login');
         }
 
-        // Comprobamos que el usuario que está intentando modificar sus datos es el mismo que está logueado
+        // Comprobamos que el usuario que está intentando mirar sus notificaciones es el mismo que está logueado
         if (Session::get('user')->idUsuario != $user->idUsuario) {
             return redirect('/login');
         }
         // Consultas y esas cosas
         $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $
 
         return view(
-            'notifications',
+            'user.notifications',
             [
                 'user' => $user,
                 'notifications' => "",

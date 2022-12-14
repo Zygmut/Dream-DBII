@@ -31,20 +31,11 @@ Route::post('/login', 'App\Http\Controllers\LoginController@login');
 // User page
 Route::get('/{username}/profile', 'App\Http\Controllers\UserController@index');
 
-// User profile edit page
-Route::get('{username}/edit', 'App\Http\Controllers\UserController@edit');
-
-// User profile edit form
-Route::post('{username}/edit', 'App\Http\Controllers\UserController@update');
-
-// User profile feed
-//Route::get('{username}/feed', 'App\Http\Controllers\UserController@feed');
-
 // User profile individual publication
-Route::get('{username}/publication/{idPublicacion}', 'App\Http\Controllers\UserController@publication');
+Route::get('/{username}/publication/{idPublicacion}', 'App\Http\Controllers\UserController@publication');
 
 // TODO
-Route::post('{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newComment');
+Route::post('/{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newComment');
 
 // TODO
 Route::get('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers\PublicationController@edit');
@@ -53,7 +44,7 @@ Route::get('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers
 Route::get('/{username}', 'App\Http\Controllers\UserFeedController@index');
 
 // Logout
-Route::get('/logout', 'App\Http\Controllers\LoginController@logout');
+Route::get('/{username}/logout', 'App\Http\Controllers\LoginController@logout');
 
 // Create a new publication
 Route::post('/publication/new/{idUsuario}', 'App\Http\Controllers\PublicationController@newPublication');
@@ -69,3 +60,6 @@ Route::post('/{username}/settings', 'App\Http\Controllers\UserSettingsController
 
 // User notifications page !(TODO)
 Route::get('/{username}/notifications', 'App\Http\Controllers\UserNotificationsController@index');
+
+// User search page
+Route::get('/{username}/search', 'App\Http\Controllers\UserSearchController@index');
