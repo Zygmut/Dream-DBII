@@ -76,3 +76,17 @@ Route::post('/{username}/follow/{usernamefollow}', 'App\Http\Controllers\UserCon
 // Unfollow user
 Route::post('/{username}/unfollow/{usernameunfollow}', 'App\Http\Controllers\UserController@unfollow');
 
+// Stories page
+Route::get('/{username}/story/{idHistoria}', 'App\Http\Controllers\HistoryController@viewHistory');
+
+// Rt a publication
+Route::post('/{username}/rt/{idPublicacion}', 'App\Http\Controllers\PublicationController@rt');
+
+// Delete a publication
+Route::post('/{username}/publication/{idPublicacion}/delete', 'App\Http\Controllers\PublicationController@delete');
+
+// See all users that follow the user
+Route::get('/{username}/followers', 'App\Http\Controllers\UserController@followers');
+
+// See all users that the user follows
+Route::get('/{username}/following', 'App\Http\Controllers\UserController@following');

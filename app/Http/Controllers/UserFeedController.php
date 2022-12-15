@@ -30,10 +30,6 @@ class UserFeedController extends Controller
             ->where('usuario.id_usu', session()->get('user')->id_usu)
             ->get();
 
-        $comments = [];
-
-        $numComments = 0;
-
         return view(
             'user.userfeed',
             [

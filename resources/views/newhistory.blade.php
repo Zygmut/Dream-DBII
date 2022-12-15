@@ -22,16 +22,6 @@
                             {{ csrf_field() }}
                             <div
                                 class="form-group
-                                @if ($errors->has('title')) has-error @endif
-                            ">
-                                <label for="title" class="col-md-4 control-label">Title</label>
-                                <div class="col-md-6">
-                                    <input id="title" type="text" class="form-control" name="title"
-                                        value="{{ old('title') }}" required autofocus>
-                                </div>
-                            </div>
-                            <div
-                                class="form-group
                                 @if ($errors->has('description')) has-error @endif
                             ">
                                 <label for="description" class="col-md-4 control-label">Description</label>
@@ -53,20 +43,11 @@
                             </div>
                             <div
                                 class="form-group
-                                @if ($errors->has('description')) has-error @endif
+                                @if ($errors->has('image')) has-error @endif
                             ">
-                                <label for="description" class="col-md-4 control-label">Publicaciones</label>
+                                <label for="image" class="col-md-4 control-label">Portada </label>
                                 <div class="col-md-6">
-                                    <select name="publicacion" id="publicacion" class="form-control">
-                                        @foreach ($publicaciones as $publicacion)
-                                            <option value="{{ $publicacion->id_pub }}">
-                                                <span>{{$publicacion->desc_pub}}</span>
-                                                <!--<img src="data:image/png;base64,{{ base64_encode($publicacion->cont_pub) }}"
-                                                    alt="publicaciones" class="img-fluid rounded shadow-sm"
-                                                    style="width: 100%; height: 100%">-->
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <input id="image" type="file" class="form-control" name="contenido" required>
                                 </div>
                             </div>
                             <div

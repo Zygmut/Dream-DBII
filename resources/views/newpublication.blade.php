@@ -21,16 +21,6 @@
                     <form class="form-horizontal" method="POST" action="/publication/new/{{ session()->get('user')->id_usu}}" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         <div class="form-group
-                                @if ($errors->has('title'))
-                                    has-error
-                                @endif
-                            ">
-                            <label for="title" class="col-md-4 control-label">Title</label>
-                            <div class="col-md-6">
-                                <input id="title" type="text" class="form-control" name="title" value="{{ old('title') }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-group
                                 @if ($errors->has('description'))
                                     has-error
                                 @endif

@@ -35,11 +35,17 @@ class UserController extends Controller
         }
 
         $publications = DB::table('publicacion')
-            ->leftJoin('contenido', 'publicacion.id_pub', '=', 'contenido.id_pub')
+            ->leftJoin('contenido', 'publicacion.id_pub', 'contenido.id_pub')
             ->where('contenido.id_pub', null)
-            ->where('autor', $userInfo->id_usu)
+            ->where('publicacion.autor', $userInfo->id_usu)
             ->orderBy('fecha_pub', 'desc')
             ->get('publicacion.*');
+
+        $rts = DB::table('publicacion')
+            ->join('rt', 'rt.id_pub', 'publicacion.id_pub')
+            ->join('info_usu', 'info_usu.id_usu', 'publicacion.autor')
+            ->where('rt.id_usu', $userInfo->id_usu)
+            ->get();
 
         $publicationsLength = count($publications);
 
@@ -62,6 +68,12 @@ class UserController extends Controller
             }
         }
 
+        $stories = DB::table('historia')
+            ->join('usuario', 'historia.id_usu', '=', 'usuario.id_usu')
+            ->where('usuario.id_usu', $userInfo->id_usu)
+            ->orderBy('fecha_his', 'desc')
+            ->get('historia.*');
+
         return view(
             'user.user',
             [
@@ -69,11 +81,13 @@ class UserController extends Controller
                 'per' => $per,
                 'userInfo' => $userInfo,
                 'publications' => $publications,
+                'rts' => $rts,
                 'followers' => $followers,
                 'following' => $following,
                 'numberPublications' => $publicationsLength,
                 'isOwner' => $isOwner,
                 'isFollowing' => $isFollowing,
+                'stories' => $stories,
             ]
         );
     }
@@ -178,7 +192,10 @@ class UserController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        $user = DB::table('info_usu')
+            ->join('usuario', 'usuario.id_usu', 'info_usu.id_usu')
+            ->where('nom_usu', $username)
+            ->first();
         if (!$user) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
@@ -191,11 +208,18 @@ class UserController extends Controller
             return redirect('/' . $username . '/profile');
         }
 
+        $isOwner = true;
+        // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
+        if (session()->get('user')->nom_usu != $username) {
+            $isOwner = false;
+        }
+
         // Obtener los comentarios de la publicación y los datos de los usuarios, junto a sus fotos de perfil
         $comments = DB::table('comentario')
             ->join('info_usu', 'comentario.id_usu', '=', 'info_usu.id_usu')
             ->join('usuario', 'info_usu.id_usu', '=', 'usuario.id_usu')
             ->where('id_pub', $idPublicacion)
+            ->orderBy('comentario.fecha_com', 'ASC')
             ->get();
         $numOfComments = count($comments);
 
@@ -205,6 +229,7 @@ class UserController extends Controller
             [
                 'publication' => $publication,
                 'user' => $user,
+                'isOwner' => $isOwner,
                 'comments' => $comments,
                 'numOfComments' => $numOfComments,
             ]
@@ -242,22 +267,24 @@ class UserController extends Controller
             ->where('nom_usu', '=', $username)
             ->get('id_usu')
             ->first();
-        // Hacer que el usuario {username} siga al usuario {usernamefollow}
-        DB::table('usu_usu')->insert([
-            'seguido' => $followedUser->id_usu,
-            'seguidor' => $userFollowing->id_usu
-        ]);
 
-        //Incrementar el número de usuarios seguidos en el usuario que ha seguido
-        DB::table('usuario')
-            ->where('id_usu', '=', $userFollowing->id_usu)
-            ->increment('seguidos'); // = seguidos + 1
-        //Incrementar número de seguidores en el usuario que ha sido seguido
-        DB::table('usuario')
-            ->where('id_usu', '=', $followedUser->id_usu)
-            ->increment('seguidores');
-        // https://es.stackoverflow.com/questions/111887/incrementar-el-valor-de-un-campo
+        DB::transaction(function () use ($followedUser, $userFollowing) {
+            // Hacer que el usuario {username} siga al usuario {usernamefollow}
+            DB::table('usu_usu')->insert([
+                'seguido' => $followedUser->id_usu,
+                'seguidor' => $userFollowing->id_usu
+            ]);
 
+            //Incrementar el número de usuarios seguidos en el usuario que ha seguido
+            DB::table('usuario')
+                ->where('id_usu', '=', $userFollowing->id_usu)
+                ->increment('seguidos'); // = seguidos + 1
+            //Incrementar número de seguidores en el usuario que ha sido seguido
+            DB::table('usuario')
+                ->where('id_usu', '=', $followedUser->id_usu)
+                ->increment('seguidores');
+            // https://es.stackoverflow.com/questions/111887/incrementar-el-valor-de-un-campo
+        });
 
         // Redirigir a la página principal del usuario {usernamefollow}
         return redirect('/' . $usernamefollow . '/profile');
@@ -295,23 +322,154 @@ class UserController extends Controller
             ->get('id_usu')
             ->first();
 
-        // Hacer que el usuario {username} deje de seguir al usuario {usernamefollow}
-        DB::table('usu_usu')
-            ->where('seguido', '=', $followedUser->id_usu)
-            ->where('seguidor', '=', $userFollowing->id_usu)
-            ->delete();
+        DB::transaction(function () use ($followedUser, $userFollowing) {
+            // Hacer que el usuario {username} deje de seguir al usuario {usernamefollow}
+            DB::table('usu_usu')
+                ->where('seguido', '=', $followedUser->id_usu)
+                ->where('seguidor', '=', $userFollowing->id_usu)
+                ->delete();
 
-        //Decrementar el número de usuarios seguidos en el usuario que ha dejado de seguir
-        DB::table('usuario')
-            ->where('id_usu', '=', $userFollowing->id_usu)
-            ->decrement('seguidos'); // = seguidos - 1
+            //Decrementar el número de usuarios seguidos en el usuario que ha dejado de seguir
+            DB::table('usuario')
+                ->where('id_usu', '=', $userFollowing->id_usu)
+                ->decrement('seguidos'); // = seguidos - 1
 
-        //Decrementar número de seguidores en el usuario que ha dejado de ser seguido
-        DB::table('usuario')
-            ->where('id_usu', '=', $followedUser->id_usu)
-            ->decrement('seguidores'); // = seguidos - 1
+            //Decrementar número de seguidores en el usuario que ha dejado de ser seguido
+            DB::table('usuario')
+                ->where('id_usu', '=', $followedUser->id_usu)
+                ->decrement('seguidores'); // = seguidos - 1
+        });
 
         // Redirigir a la página principal del usuario {usernamefollow}
         return redirect('/' . $usernamefollow . '/profile');
+    }
+
+    public function followers($username)
+    {
+        // Comprobar que el usuario está logueado
+        if (!session()->has('user')) {
+            // Si no está logueado, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // De cada follower necesitamos:
+        // - Foto de perfil
+        // - Nombre de usuario
+        // - Nombre 
+        // - Apellidos
+        // - Número de seguidores
+        // - Número de seguidos
+
+        // Obtener los seguidores del usuario {username}
+        $followers =  DB::select(DB::raw(
+            '
+            SELECT
+                p.foto_perfil,
+                p.seguidores,
+                p.seguidos,
+                info_usu.nom_usu,
+                p.nom_per,
+                p.apellidos
+            FROM
+                INFO_USU
+            JOIN(
+                    (
+                    SELECT usuario.id_usu,
+                        usuario.foto_perfil,
+                        usuario.seguidores,
+                        usuario.seguidos,
+                        persona.nom_per,
+                        persona.apellidos
+                    FROM
+                        persona
+                    JOIN(
+                            USUARIO
+                        JOIN usu_usu ON usu_usu.seguido = \'' . $user->id_usu . '\' AND usu_usu.seguidor = usuario.id_usu
+                        )
+                    ON
+                        persona.DNI = usuario.id_usu
+                ) AS p
+                )
+            ON
+                info_usu.id_usu = p.id_usu
+            '
+        ));
+
+        return view(
+            'user.userfollowers',
+            [
+                'followers' => $followers
+            ]
+        );
+    }
+
+    public function following($username)
+    {
+        // Comprobar que el usuario está logueado
+        if (!session()->has('user')) {
+            // Si no está logueado, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+        // De cada follower necesitamos:
+        // - Foto de perfil
+        // - Nombre de usuario
+        // - Nombre
+        // - Nombre apellidos
+        // - Número de seguidores
+        // - Número de seguidos
+
+        // Obtener los usuarios que sigue el usuario {username}
+        $following = DB::select(DB::raw(
+            '
+            SELECT
+                p.foto_perfil,
+                p.seguidores,
+                p.seguidos,
+                info_usu.nom_usu,
+                p.nom_per,
+                p.apellidos
+            FROM
+                INFO_USU
+            JOIN(
+                (
+                SELECT
+                    usuario.id_usu,
+                    usuario.foto_perfil,
+                    usuario.seguidores,
+                    usuario.seguidos,
+                    persona.nom_per,
+                    persona.apellidos
+                FROM
+                    persona
+                    JOIN(
+                    USUARIO
+                    JOIN usu_usu ON usu_usu.seguido = \'' . $user->id_usu . '\'
+                    AND usu_usu.seguidor = usuario.id_usu
+                    ) ON persona.DNI = usuario.id_usu
+                ) AS p
+            ) ON info_usu.id_usu = p.id_usu
+            '
+        ));
+
+        return view(
+            'user.userfollowing',
+            [
+                'following' => $following
+            ]
+        );
     }
 }

@@ -91,11 +91,85 @@ class PublicationController extends Controller
         //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
         DB::table('mensaje')->insert([
             'id_usu' => $idUsuario,
-            'cont_men' => "Nueva Publicación! Ver publicación: /",
+            'cont_men' => "Nueva Publicación!",
             'link' => Session::get('user')->nom_usu . "/publication/" . $idPublicacion,
             'fecha_men' => date('Y-m-d H:i:s'),
         ]);
 
         return redirect('/' . Session::get('user')->nom_usu . '/profile');
+    }
+
+    public function rt($username, $idPublicacion)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario ya ha retuiteado la publicación
+        $rt = DB::table('rt')
+            ->where('id_usu', $user->id_usu)
+            ->where('id_pub', $idPublicacion)
+            ->first();
+        if ($rt) {
+            DB::table('rt')
+                ->where('id_usu', $user->id_usu)
+                ->where('id_pub', $idPublicacion)
+                ->delete();
+            return back();
+        }
+
+        //Insert into 'rt' (idUsuario, idPublicacion, fecha)
+        //values (idUsuario, idPublicacion, fecha)
+        DB::table('rt')->insert([
+            'id_usu' => $user->id_usu,
+            'id_pub' => $idPublicacion,
+            //'fecha' => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect('/' . $username . '/profile');
+    }
+
+    public function delete($username, $idPublicacion)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario es el autor de la publicación
+        $publication = DB::table('publicacion')->where('id_pub', $idPublicacion)->first();
+        if ($publication->autor != $user->id_usu) {
+            return back();
+        }
+
+        DB::transaction(function () use ($idPublicacion) {
+            // Delete the publication and all the comments and retweets
+            DB::table('comentario')
+                ->where('id_pub', $idPublicacion)
+                ->delete();
+
+            DB::table('rt')
+                ->where('id_pub', $idPublicacion)
+                ->delete();
+
+            DB::table('publicacion')
+                ->where('id_pub', $idPublicacion)
+                ->delete();
+        });
+
+        return redirect('/' . $username . '/profile');
     }
 }

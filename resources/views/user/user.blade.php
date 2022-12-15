@@ -47,16 +47,20 @@
                         </div>
                         <div class="p-4 text-black">
                             <div class="d-flex justify-content-end text-center py-1">
-                                <div>
-                                    <p class="mb-1 h5">{{ $numberPublications }}</p>
+                                <div >
+                                    <a class="mb-1 h5 text-decoration-none text-black " >
+                                        {{ $numberPublications }}
+                                    </a>
                                     <p class="small text-muted mb-0">Fotos</p>
                                 </div>
                                 <div class="px-3">
-                                    <p class="mb-1 h5">{{ $followers }}</p>
+                                    <a class="mb-1 h5 text-decoration-none text-black"
+                                        href="/{{ $userInfo->nom_usu }}/followers">{{ $followers }}</a>
                                     <p class="small text-muted mb-0">Seguidores</p>
                                 </div>
                                 <div>
-                                    <p class="mb-1 h5">{{ $following }}</p>
+                                    <a class="mb-1 h5 text-decoration-none text-black"
+                                        href="/{{ $userInfo->nom_usu }}/following">{{ $following }}</a>
                                     <p class="small text-muted mb-0">Siguiendo</p>
                                 </div>
                             </div>
@@ -67,24 +71,65 @@
                                         {{ $user->description }}
                                     </div>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <p class="lead fw-normal mb-0">Historias</p>
-                                </div>
-                                
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <p class="lead fw-normal mb-0">Publicaciones</p>
-                                </div>
-                                <div class="row">
-                                    @foreach ($publications as $publication)
-                                        <div class="col-lg-6 mb-2 pr-lg-1">
-                                            <a href="/{{ $userInfo->nom_usu }}/publication/{{ $publication->id_pub }}">
-                                                <img src="data:image/png;base64,{{ base64_encode($publication->cont_pub) }}"
-                                                    alt="publicaciones" class="img-fluid rounded shadow-sm"
-                                                    style="width: 100%; height: 100%">
-                                            </a>
-                                        </div>
-                                    @endforeach
-                                </div>
+                                @if ($stories->count() > 0)
+                                    <h2 class="lead fw-normal mb-3 text-center fw-bold">Historias</h2>
+                                    <div class="row">
+                                        @foreach ($stories as $story)
+                                            @if ($story->estado_his == 'publica')
+                                                <!-- 0 = publica -->
+                                                <div class="col-lg-6 mb-2 pr-lg-1">
+                                                    <a href="/{{ $userInfo->nom_usu }}/story/{{ $story->id_his }}">
+                                                        <img src="data:image/png;base64,{{ base64_encode($story->cont_his) }}"
+                                                            alt="historias" class="img-fluid rounded shadow-sm"
+                                                            style="width: 100%; height: 100%">
+                                                    </a>
+                                                </div>
+                                            @else
+                                                <!-- 1 = privada -->
+                                                @if ($isFollowing || $isOwner)
+                                                    <div class="col-lg-6 mb-2 pr-lg-1">
+                                                        <a href="/{{ $userInfo->nom_usu }}/story/{{ $story->id_his }}">
+                                                            <img src="data:image/png;base64,{{ base64_encode($story->cont_his) }}"
+                                                                alt="historias" class="img-fluid rounded shadow-sm"
+                                                                style="width: 100%; height: 100%">
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                    <hr>
+                                @endif
+                                @if ($rts->count() > 0)
+                                    <h2 class="lead fw-normal mb-3 text-center fw-bold">Compartido</h2>
+                                    <div class="row">
+                                        @foreach ($rts as $rt)
+                                            <div class="col-lg-6 mb-2 pr-lg-1">
+                                                <a href="/{{ $rt->nom_usu }}/publication/{{ $rt->id_pub }}">
+                                                    <img src="data:image/png;base64,{{ base64_encode($rt->cont_pub) }}"
+                                                        alt="rt" class="img-fluid rounded shadow-sm"
+                                                        style="width: 100%; height: 100%">
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <hr>
+                                @endif
+                                @if ($publications->count() > 0)
+                                    <h2 class="lead fw-normal mb-3 text-center fw-bold">Publicaciones</h2>
+                                    <div class="row">
+                                        @foreach ($publications as $publication)
+                                            <div class="col-lg-6 mb-2 pr-lg-1">
+                                                <a
+                                                    href="/{{ $userInfo->nom_usu }}/publication/{{ $publication->id_pub }}">
+                                                    <img src="data:image/png;base64,{{ base64_encode($publication->cont_pub) }}"
+                                                        alt="publicaciones" class="img-fluid rounded shadow-sm"
+                                                        style="width: 100%; height: 100%">
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
