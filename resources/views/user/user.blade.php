@@ -12,7 +12,9 @@
                     <div class="card shadow-lg rounded-3 bg-light">
                         <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
                             <div class="ms-4 mt-5 row" style="width: 150px;">
-                                <img src="data:image/png;base64,{{ base64_encode($user->foto_perfil) }}"
+                                <img @if ($user->foto_perfil == null) src="/img/default_profile.jpg"
+                                @else
+                                src="data:image/png;base64,{{ base64_encode($user->foto_perfil) }}" @endif
                                     alt="Generic placeholder image" class="img-thumbnail mt-4 mb-2"
                                     style="z-index: 1; width: 100%; height: 100%; padding:5px;">
                                 @if ($isOwner)
@@ -22,6 +24,20 @@
                                     </a>
                                     <a href="/{{ $userInfo->nom_usu }}/notifications" class="btn btn-outline-dark"
                                         style="z-index: 1; margin-top:15px">Notificaciones</a>
+                                @else
+                                    @if ($isFollowing)
+                                        <form action="/{{ session('user')->nom_usu }}/unfollow/{{ $userInfo->nom_usu }}"
+                                            method="POST" style="z-index: 1">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-dark">Dejar de seguir</button>
+                                        </form>
+                                    @else
+                                        <form action="/{{ session('user')->nom_usu }}/follow/{{ $userInfo->nom_usu }}"
+                                            method="POST" style="z-index: 1">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-dark w-100">Seguir</button>
+                                        </form>
+                                    @endif
                                 @endif
                             </div>
                             <div class="ms-3" style="margin-top: 130px;">
@@ -51,28 +67,12 @@
                                         {{ $user->description }}
                                     </div>
                                 </div>
-                                @if (!$isOwner)
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <p class="lead fw-normal mb-0">Información</p>
-                                        @if ($isFollowing)
-                                            <form
-                                                action="/{{ session('user')->nom_usu }}/unfollow/{{ $userInfo->nom_usu }}"
-                                                method="POST">
-                                                @csrf
-                                                <button type="submit" class="btn btn-outline-dark">Dejar de seguir</button>
-                                            </form>
-                                        @else
-                                            <form action="/{{ session('user')->nom_usu }}/follow/{{ $userInfo->nom_usu }}"
-                                                method="POST">
-                                                @csrf
-                                                <button type="submit" class="btn btn-outline-dark">Seguir</button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                @endif
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <p class="lead fw-normal mb-0">Fotos recientes</p>
-                                    <p class="mb-0"><a href="#!" class="text-muted">Enseñar todo</a></p>
+                                    <p class="lead fw-normal mb-0">Historias</p>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <p class="lead fw-normal mb-0">Publicaciones</p>
                                 </div>
                                 <div class="row">
                                     @foreach ($publications as $publication)

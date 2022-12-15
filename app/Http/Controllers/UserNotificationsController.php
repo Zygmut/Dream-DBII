@@ -16,18 +16,47 @@ class UserNotificationsController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nom_usu', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
 
         // Comprobamos que el usuario que está intentando mirar sus notificaciones es el mismo que está logueado
-        if (Session::get('user')->idUsuario != $user->idUsuario) {
+        if (Session::get('user')->id_usu != $user->id_usu) {
             return redirect('/login');
         }
-        // Consultas y esas cosas
-        $user = DB::table('info_usuario')->where('nom_usu', $username)->first();
 
-        return;
+        /**
+         *SELECT
+         *
+         *FROM
+         *    `mensaje`
+         *JOIN receptor ON receptor.id_men = mensaje.id_men
+         *JOIN usuario ON usuario.id_usu = receptor.id_usu
+         *JOIN usuario AS autor
+         *ON
+         *    mensaje.id_usu = autor.id_usu
+         *WHERE
+         *    usuario.id_usu = '12345678C' 
+         */
+        $notificaciones = DB::table('mensaje')
+            ->join('receptor', 'receptor.id_men', '=', 'mensaje.id_men')
+            ->join('usuario', 'usuario.id_usu', '=', 'receptor.id_usu')
+            ->join('usuario as autor', 'autor.id_usu', '=', 'mensaje.id_usu')
+            ->where('receptor.id_usu', '=', $user->id_usu)
+            ->orderBy('mensaje.fecha_men', 'desc')
+            ->get();
+
+        if ($notificaciones->isEmpty()) {
+            $notificaciones = [];
+        }
+
+        return view(
+            'user.usernotifications',
+            [
+                'user' => $user,
+                'notificaciones' => $notificaciones,
+            ]
+        );
     }
 }

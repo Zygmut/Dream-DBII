@@ -20,15 +20,7 @@
                         <h3>Usuarios ({{ count($users) }})</h3>
                         <div class="row">
                             @foreach ($users as $user)
-                                <div class="col-md-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-center">
-                                                <a href="/{{ $user->nom_usu }}/profile">{{ $user->nom_usu }}</a>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
+                                @include('components.miniprofile', ['user' => $user])
                             @endforeach
                         </div>
                     @endif

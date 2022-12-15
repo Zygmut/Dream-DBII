@@ -26,6 +26,9 @@
                         href="/publication/new">Nueva publicacion</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/history/new">Nueva historia</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/{{ session('user')->nom_usu }}/logout">Logout</a>
                 </li>
             </ul>

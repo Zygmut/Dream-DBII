@@ -52,6 +52,12 @@ Route::post('/publication/new/{idUsuario}', 'App\Http\Controllers\PublicationCon
 // Create a new publication page
 Route::get('/publication/new', 'App\Http\Controllers\PublicationController@index');
 
+// Create a new history
+Route::post('/history/new/{idUsuario}', 'App\Http\Controllers\HistoryController@newHistory');
+
+// Create a new history page
+Route::get('/history/new', 'App\Http\Controllers\HistoryController@index');
+
 // User settings page
 Route::get('/{username}/settings', 'App\Http\Controllers\UserSettingsController@index');
 

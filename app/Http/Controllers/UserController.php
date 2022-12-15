@@ -34,7 +34,13 @@ class UserController extends Controller
             $isOwner = false;
         }
 
-        $publications = DB::table('publicacion')->where('autor', $userInfo->id_usu)->orderBy('fecha_pub', 'desc')->get();
+        $publications = DB::table('publicacion')
+            ->leftJoin('contenido', 'publicacion.id_pub', '=', 'contenido.id_pub')
+            ->where('contenido.id_pub', null)
+            ->where('autor', $userInfo->id_usu)
+            ->orderBy('fecha_pub', 'desc')
+            ->get('publicacion.*');
+
         $publicationsLength = count($publications);
 
         $followers = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first()->seguidores;

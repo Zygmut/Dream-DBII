@@ -25,7 +25,9 @@
                 <div class="media m-b-20">
                     <a class="media-left" href="#">
                         <img class="media-object img-radius m-r-20"
-                            src="data:image/png;base64,{{ base64_encode($comment->foto_perfil) }}"
+                            @if ($comment->foto_perfil == null) src="/img/default_profile.jpg"
+                        @else
+                            src="data:image/png;base64,{{ base64_encode($comment->foto_perfil) }}" @endif
                             alt="Generic placeholder image">
                     </a>
                     <div class="media-body b-b-muted social-client-description">
@@ -37,7 +39,10 @@
             @endforeach
             <div class="media">
                 <a class="media-left" href="#">
-                    <img class="media-object img-radius m-r-20" src="data:image/png;base64,{{ base64_encode($comment->foto_perfil) }}"
+                    <img class="media-object img-radius m-r-20"
+                        @if (session('user')->foto_perfil == null) src="/img/default_profile.jpg"
+                    @else
+                        src="data:image/png;base64,{{ base64_encode(session('user')->foto_perfil) }}" @endif
                         alt="Generic placeholder image">
                 </a>
                 <div class="media-body">

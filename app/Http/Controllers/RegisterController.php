@@ -86,7 +86,7 @@ class RegisterController extends Controller
             'description' => 'Hola, soy ' . $data['nombreUsuario'],
             'seguidores' => 0,
             'seguidos' => 0,
-            'foto_perfil' => $image  // Mirar como subir una imagen por defecto a la base de datos
+            'foto_perfil' => null //$image  // Mirar como subir una imagen por defecto a la base de datos
         ]);
 
         // Insertar datos en tabla info_usuario

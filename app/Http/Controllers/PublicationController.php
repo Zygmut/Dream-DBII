@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Shmop;
-use SNMP;
 
 class PublicationController extends Controller
 {
@@ -83,18 +81,21 @@ class PublicationController extends Controller
 
         // Insert into 'publicacion' (idUsuarioAutor, descripcion, contenido, fecha)
         // values (idUsuario, descripcion, contenido, fecha)
-        DB::table('publicacion')->insert([
+        $idPublicacion = DB::table('publicacion')->insertGetId([
             'autor' => $idUsuario,
             'desc_pub' => request()->descripcion,
             'cont_pub' => $image_cont,
             'fecha_pub' => date('Y-m-d H:i:s'),
         ]);
+
         //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
         DB::table('mensaje')->insert([
             'id_usu' => $idUsuario,
-            'cont_men' => "Nueva Publicación!",
+            'cont_men' => "Nueva Publicación! Ver publicación: /",
+            'link' => Session::get('user')->nom_usu . "/publication/" . $idPublicacion,
             'fecha_men' => date('Y-m-d H:i:s'),
         ]);
+
         return redirect('/' . Session::get('user')->nom_usu . '/profile');
     }
 }
