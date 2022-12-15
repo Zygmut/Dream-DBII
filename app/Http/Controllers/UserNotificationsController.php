@@ -16,7 +16,7 @@ class UserNotificationsController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usuario')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
@@ -26,15 +26,8 @@ class UserNotificationsController extends Controller
             return redirect('/login');
         }
         // Consultas y esas cosas
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
-        $
+        $user = DB::table('info_usuario')->where('nom_usu', $username)->first();
 
-        return view(
-            'user.notifications',
-            [
-                'user' => $user,
-                'notifications' => "",
-            ]
-        );
+        return;
     }
 }

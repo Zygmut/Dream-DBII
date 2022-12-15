@@ -43,6 +43,19 @@ class UserController extends Controller
         $user = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first();
         $per = DB::table('persona')->where('dni', $user->id_usu)->first();
 
+        $isFollowing = false;
+        if (!$isOwner) {
+            // Comprobar si el usuario sigue a la persona que está viendo
+            $aux = DB::table('usu_usu')
+                // WHERE seguido=userInfo AND seguidor = session User
+                ->where('seguido', $userInfo->id_usu)
+                ->where('seguidor', session()->get('user')->id_usu)
+                ->first();
+            if ($aux != null) {
+                $isFollowing = true;
+            }
+        }
+
         return view(
             'user.user',
             [
@@ -54,6 +67,7 @@ class UserController extends Controller
                 'following' => $following,
                 'numberPublications' => $publicationsLength,
                 'isOwner' => $isOwner,
+                'isFollowing' => $isFollowing,
             ]
         );
     }
@@ -89,29 +103,6 @@ class UserController extends Controller
                 'user' => $user,
             ]
         );
-    }
-
-    public function followManagement($username){
-         // Comprobar que el usuario está logueado
-        if (!session()->has('user')) {
-            // Si no está logueado, redirigir a la página de login
-            return redirect('/login');
-        }
-
-        // Comprobar que el usuario existe
-        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
-        if (!$user) {
-            // Si no existe, redirigir a la página de login
-            return redirect('/login');
-        }
-        // Algoritmo
-        /*
-        Si el usuario es == al owner
-            no mostrar botón
-        Si no
-            mostrar botón
-                El valor del botón y su funcionalidad depende de si le sigue o no (QUERY aunque con un estado molaría más truly)
-        */    
     }
 
     /**
@@ -209,8 +200,112 @@ class UserController extends Controller
                 'publication' => $publication,
                 'user' => $user,
                 'comments' => $comments,
-                'numOfComments' => $numOfComments
+                'numOfComments' => $numOfComments,
             ]
         );
+    }
+
+    public function follow($username, $usernamefollow)
+    {
+        // Comprobar que el usuario está logueado
+        if (!session()->has('user')) {
+            // Si no está logueado, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuarioFollow existe
+        $userfollow = DB::table('info_usu')->where('nom_usu', $usernamefollow)->first();
+        if (!$userfollow) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        $followedUser = DB::table('info_usu')
+            ->where('nom_usu', '=', $usernamefollow)
+            ->get('id_usu')
+            ->first();
+
+        $userFollowing = DB::table('info_usu')
+            ->where('nom_usu', '=', $username)
+            ->get('id_usu')
+            ->first();
+        // Hacer que el usuario {username} siga al usuario {usernamefollow}
+        DB::table('usu_usu')->insert([
+            'seguido' => $followedUser->id_usu,
+            'seguidor' => $userFollowing->id_usu
+        ]);
+
+        //Incrementar el número de usuarios seguidos en el usuario que ha seguido
+        DB::table('usuario')
+            ->where('id_usu', '=', $userFollowing->id_usu)
+            ->increment('seguidos'); // = seguidos + 1
+        //Incrementar número de seguidores en el usuario que ha sido seguido
+        DB::table('usuario')
+            ->where('id_usu', '=', $followedUser->id_usu)
+            ->increment('seguidores');
+        // https://es.stackoverflow.com/questions/111887/incrementar-el-valor-de-un-campo
+
+
+        // Redirigir a la página principal del usuario {usernamefollow}
+        return redirect('/' . $usernamefollow . '/profile');
+    }
+
+    public function unfollow($username, $usernamefollow)
+    {
+        // Comprobar que el usuario está logueado
+        if (!session()->has('user')) {
+            // Si no está logueado, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $userfollow = DB::table('info_usu')->where('nom_usu', $usernamefollow)->first();
+        if (!$userfollow) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        $followedUser = DB::table('info_usu')
+            ->where('nom_usu', '=', $usernamefollow)
+            ->get('id_usu')
+            ->first();
+
+        $userFollowing = DB::table('info_usu')
+            ->where('nom_usu', '=', $username)
+            ->get('id_usu')
+            ->first();
+
+        // Hacer que el usuario {username} deje de seguir al usuario {usernamefollow}
+        DB::table('usu_usu')
+            ->where('seguido', '=', $followedUser->id_usu)
+            ->where('seguidor', '=', $userFollowing->id_usu)
+            ->delete();
+
+        //Decrementar el número de usuarios seguidos en el usuario que ha dejado de seguir
+        DB::table('usuario')
+            ->where('id_usu', '=', $userFollowing->id_usu)
+            ->decrement('seguidos'); // = seguidos - 1
+
+        //Decrementar número de seguidores en el usuario que ha dejado de ser seguido
+        DB::table('usuario')
+            ->where('id_usu', '=', $followedUser->id_usu)
+            ->decrement('seguidores'); // = seguidos - 1
+
+        // Redirigir a la página principal del usuario {usernamefollow}
+        return redirect('/' . $usernamefollow . '/profile');
     }
 }

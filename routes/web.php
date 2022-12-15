@@ -34,8 +34,8 @@ Route::get('/{username}/profile', 'App\Http\Controllers\UserController@index');
 // User profile individual publication
 Route::get('/{username}/publication/{idPublicacion}', 'App\Http\Controllers\UserController@publication');
 
-// TODO
-Route::post('/{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newComment');
+// New comment form
+Route::post('/{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newcomment');
 
 // TODO
 Route::get('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers\PublicationController@edit');
@@ -63,3 +63,10 @@ Route::get('/{username}/notifications', 'App\Http\Controllers\UserNotificationsC
 
 // User search page
 Route::get('/{username}/search', 'App\Http\Controllers\UserSearchController@index');
+
+// Follow user
+Route::post('/{username}/follow/{usernamefollow}', 'App\Http\Controllers\UserController@follow');
+
+// Unfollow user
+Route::post('/{username}/unfollow/{usernameunfollow}', 'App\Http\Controllers\UserController@unfollow');
+

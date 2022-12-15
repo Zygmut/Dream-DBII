@@ -19,7 +19,7 @@ class RegisterController extends Controller
         // Comprobar que el usuario está logueado
         if (Session::has('user')) {
             // Si está logueado, redirigir la página principal del usuario {username}
-            return redirect('/' . session()->get('user')->nombreUsuario . '/profile');
+            return redirect('/' . session()->get('user')->nom_usu . '/profile');
         }
         // Si no está logueado, redirigir a la página de registro
         return view('register');
@@ -53,17 +53,17 @@ class RegisterController extends Controller
         }
 
         // Comprobar que el nombre de usuario o el mail no está en uso
-        if (DB::table('info_usu')->where('nom_usu', $data['nombreUsuario'])->first()){
+        if (DB::table('info_usu')->where('nom_usu', $data['nombreUsuario'])->first()) {
             return redirect('/register')->withErrors([
                 'nombreUsuario' => 'El nombre de usuario ya está en uso'
             ]);
         }
-        if (DB::table('info_usu')->where('mail', $data['mail'])->first()){
+        if (DB::table('info_usu')->where('mail', $data['mail'])->first()) {
             return redirect('/register')->withErrors([
                 'email' => 'El email ya está en uso'
             ]);
         }
-        if (DB::table('info_usu')->where('id_usu', $data['dni'])->first()){
+        if (DB::table('info_usu')->where('id_usu', $data['dni'])->first()) {
             return redirect('/register')->withErrors([
                 'dni' => 'El dni ya está en uso'
             ]);
@@ -77,7 +77,8 @@ class RegisterController extends Controller
             'telf' => $data['telefono'],
             'nacimiento' => $data['fechaNacimiento'],
         ]);
-
+        $imagePath = public_path("img/default_profile.jpg");
+        $image = base64_encode(file_get_contents($imagePath));
         // Insertar datos en tabla usuario
         DB::table('usuario')->insert([
             'id_usu' => $data['dni'],
@@ -85,7 +86,7 @@ class RegisterController extends Controller
             'description' => 'Hola, soy ' . $data['nombreUsuario'],
             'seguidores' => 0,
             'seguidos' => 0,
-            'foto_perfil' => 'default.jpg' // Mirar como subir una imagen por defecto a la base de datos
+            'foto_perfil' => $image  // Mirar como subir una imagen por defecto a la base de datos
         ]);
 
         // Insertar datos en tabla info_usuario

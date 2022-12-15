@@ -67,15 +67,20 @@ class UserSettingsController extends Controller
             return redirect('/' . Session::get('user')->nom_usu . '/settings');
         }
 
+        $validator = null;
+        // Ver porque algunas imagenes, aunque cumplan los requisitos
+        // son rechazadas por el validartor
         // Validamos los datos
         $validator = Validator::make(request()->all(), [
             'nom_per' => 'required | max:255',
             'apellidos' => 'required | max:255',
             'nom_usu' => 'required | max:255',
+            'pass' => 'required | max:255',
             'mail' => 'required | email | max:255',
             'telf' => 'required | max:255',
             'nacimiento' => 'required | date',
             'description' => 'required | max:256',
+            'perfil' => 'nullable | image | mimes:jpeg,png,jpg,gif,svg',
         ]);
 
         if ($validator->fails()) {
@@ -110,8 +115,17 @@ class UserSettingsController extends Controller
             ->where('id_usu', $user->id_usu)
             ->update([
                 'description' => request()->description,
-                //'fotoPerfil' => request()->fotoPerfil
             ]);
+
+        if (request()->perfil != null) {
+            $image = request()->file('perfil');
+            $image_cont = $image->openFile()->fread($image->getSize());
+            DB::table('usuario')
+                ->where('id_usu', $user->id_usu)
+                ->update([
+                    'foto_perfil' => $image_cont
+                ]);
+        }
 
         DB::table('info_usu')
             ->where('id_usu', $user->id_usu)

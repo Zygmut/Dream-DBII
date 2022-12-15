@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
+use Shmop;
+use SNMP;
 
 class PublicationController extends Controller
 {
@@ -28,9 +29,30 @@ class PublicationController extends Controller
         return view('newpublication');
     }
 
-    public function newcommet($idUsuario, $idPublicacion)
+    public function newcomment($idUsuario, $idPublicacion)
     {
-        // TODO: Implementar
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        // Validamos los datos
+        $validator = Validator::make(request()->all(), [
+            'comentario' => 'required | max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        DB::table('comentario')->insert([
+            'id_pub' => $idPublicacion,
+            'id_usu' => session()->get('user')->id_usu,
+            'cont_com' => request()->comentario,
+            'fecha_com' => date('Y-m-d H:i:s'),
+        ]);
+
+        return back();
     }
 
     public function newPublication($idUsuario)
@@ -55,8 +77,6 @@ class PublicationController extends Controller
             return redirect('/publication/new')->withErrors($validator);
         }
 
-        // NO FUNCIONA, FALTA SOLUCIONAR COMO OBTENER LA IMAGEN Y GURADARLA EN BASE64
-
         // Save the image from the content of the request into a blob in the database in base64
         $image = request()->file('contenido');
         $image_cont = $image->openFile()->fread($image->getSize());
@@ -71,8 +91,8 @@ class PublicationController extends Controller
         ]);
         //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
         DB::table('mensaje')->insert([
-            'id_usu' =>$idUsuario,
-            'cont_men'=> "Nueva Publicación!",
+            'id_usu' => $idUsuario,
+            'cont_men' => "Nueva Publicación!",
             'fecha_men' => date('Y-m-d H:i:s'),
         ]);
         return redirect('/' . Session::get('user')->nom_usu . '/profile');
