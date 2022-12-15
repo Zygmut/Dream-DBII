@@ -81,12 +81,13 @@ class PublicationController extends Controller
 
         // Insert into 'publicacion' (idUsuarioAutor, descripcion, contenido, fecha)
         // values (idUsuario, descripcion, contenido, fecha)
-        $idPublicacion = DB::table('publicacion')->insertGetId([
-            'autor' => $idUsuario,
-            'desc_pub' => request()->descripcion,
-            'cont_pub' => $image_cont,
-            'fecha_pub' => date('Y-m-d H:i:s'),
-        ]);
+        $idPublicacion = DB::table('publicacion')
+            ->insertGetId([
+                'autor' => $idUsuario,
+                'desc_pub' => request()->descripcion,
+                'cont_pub' => $image_cont,
+                'fecha_pub' => date('Y-m-d H:i:s'),
+            ]);
 
         //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
         DB::table('mensaje')->insert([

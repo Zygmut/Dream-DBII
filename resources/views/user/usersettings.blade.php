@@ -7,15 +7,7 @@
                 <div class="col-sm-9 col-md-7 col-lg-7 mx-auto">
                     <div class="card border-0 shadow-lg rounded-3 my-5 bg-light">
                         <div class="card-body p-4 p-sm-5">
-                            <h1 class="card-title text-center ">Modificar el perfil</h1>
-                            <!--
-                                                                                                                        <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img
-                                                                                                                                class="rounded-circle mt-5" src="https://i.imgur.com/0eg0aG0.jpg" width="90"><span
-                                                                                                                                class="font-weight-bold">John
-                                                                                                                                Doe</span><span class="text-black-50">john_doe12@bbb.com</span><span>United
-                                                                                                                                States</span>
-                                                                                                                        </div>
-                                                                                                                    -->
+                            <h1 class="card-title text-center mb-5">Modificar el perfil</h1>
                             <form action="/{{ $userInfo->nom_usu }}/settings" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
@@ -70,12 +62,6 @@
                                         <label for="perfil" class="control-label">Imagen de perfil</label>
                                         <input id="perfil" type="file" class="form-control" name="perfil">
                                     </div>
-                                    <!--
-                                                                            <div class="form-group col-md-6">
-                                                                                <label for="banner" class="control-label">Banner</label>
-                                                                                <input id="banner" type="file" class="form-control" name="banner">
-                                                                            </div>
-                                                                        -->
                                 </div>
                                 <div class="d-grid">
                                     <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">

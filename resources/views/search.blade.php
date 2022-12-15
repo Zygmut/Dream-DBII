@@ -4,14 +4,14 @@
     <!-- Search Page-->
     <div class="row">
         <div class="col-md-12">
-            <h1>Search</h1>
+            <h1>Buscador de Usuarios</h1>
             <form action="/{{ session('user')->nom_usu }}/search" method="GET">
                 <div class="form-group">
                     <input type="text" name="q" id="query" class="form-control" placeholder="Search"
                         value="{{ request()->input('query') }}">
                 </div>
                 <div class="form-group py-2 my-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
                 </div>
             </form>
             <div class="row">

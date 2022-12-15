@@ -83,15 +83,17 @@ class HistoryController extends Controller
                 'fecha_his' => date('Y-m-d H:i:s'),
                 'cont_his' => $image_cont
             ]);
+
         #El insert a mensaje se hace aquí ya que no puede haber un fallo a la hora de crear la historia, a menos que 
         #desaparezca de repente el usuario, problema a nivel que se cae el servidor entero. ?? creo??
 
         DB::table('mensaje')->insert([
             'id_usu' => $idUsuario,
-            'cont_men' => "Nueva Publicación!",
+            'cont_men' => "Nueva Historia!",
             'link' => Session::get('user')->nom_usu . "/publication/" . $idHistoria,
             'fecha_men' => date('Y-m-d H:i:s'),
         ]);
+
         return redirect('/' . Session::get('user')->nom_usu . '/profile');
     }
 
@@ -112,7 +114,7 @@ class HistoryController extends Controller
         // Obtenemos las publicaciones de las historias del usuario
         $publicaciones = DB::table('historia')
             ->join('contenido', 'historia.id_his', '=', 'contenido.id_his')
-            ->join('publicacion', 'publicacion.id_pub','=', 'contenido.id_pub')
+            ->join('publicacion', 'publicacion.id_pub', '=', 'contenido.id_pub')
             ->where('historia.id_usu', '=', $userInfo->id_usu)
             ->where('historia.id_his', '=', $idHistoria)
             ->orderByDesc('publicacion.fecha_pub')

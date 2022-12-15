@@ -3,7 +3,7 @@
 @section('content')
 <div class="container px-4 py-5">
     <h2 class="pb-2 border-bottom text-center">
-        Index Page
+        Indice 
     </h2>
     <div class="row pt-2 mt-4">
         <div class="col-sm-6 m-auto">
