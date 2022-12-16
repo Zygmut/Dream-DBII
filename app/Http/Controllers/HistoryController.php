@@ -75,24 +75,25 @@ class HistoryController extends Controller
         $image = request()->file('contenido');
         $image_cont = $image->openFile()->fread($image->getSize());
 
-        $idHistoria = DB::table('historia')
-            ->insertGetId([
+        DB::transaction(function () use ($idUsuario, $aux, $image_cont) {
+            $idHistoria = DB::table('historia')
+                ->insertGetId([
+                    'id_usu' => $idUsuario,
+                    'desc_his' => request()->descripcion,
+                    'estado_his' => $aux,
+                    'fecha_his' => date('Y-m-d H:i:s'),
+                    'cont_his' => $image_cont
+                ]);
+            DB::table('mensaje')->insert([
                 'id_usu' => $idUsuario,
-                'desc_his' => request()->descripcion,
-                'estado_his' => $aux,
-                'fecha_his' => date('Y-m-d H:i:s'),
-                'cont_his' => $image_cont
+                'cont_men' => "Nueva Historia!",
+                'link' => Session::get('user')->nom_usu . "/story/" . $idHistoria,
+                'fecha_men' => date('Y-m-d H:i:s'),
             ]);
-
+        });
         #El insert a mensaje se hace aquí ya que no puede haber un fallo a la hora de crear la historia, a menos que 
         #desaparezca de repente el usuario, problema a nivel que se cae el servidor entero. ?? creo??
 
-        DB::table('mensaje')->insert([
-            'id_usu' => $idUsuario,
-            'cont_men' => "Nueva Historia!",
-            'link' => Session::get('user')->nom_usu . "/publication/" . $idHistoria,
-            'fecha_men' => date('Y-m-d H:i:s'),
-        ]);
 
         return redirect('/' . Session::get('user')->nom_usu . '/profile');
     }
@@ -105,11 +106,23 @@ class HistoryController extends Controller
         }
 
         // Comprobar que el usuario existe
-        $userInfo = DB::table('info_usu')->where('nom_usu', $username)->first();
+        $userInfo = DB::table('info_usu')
+            ->join('usuario', 'usuario.id_usu', 'info_usu.id_usu')
+            ->where('nom_usu', $username)->first();
         if (!$userInfo) {
             // Si no existe, redirigir a la página de login
             return redirect('/login');
         }
+
+        $isOwner = true;
+        // Comprobar que el usuario logueado es el mismo que el que quiere acceder a su página principal
+        if (session()->get('user')->nom_usu != $username) {
+            $isOwner = false;
+        }
+
+        $story = DB::table('historia')
+            ->where('historia.id_his', $idHistoria)
+            ->first();
 
         // Obtenemos las publicaciones de las historias del usuario
         $publicaciones = DB::table('historia')
@@ -125,7 +138,8 @@ class HistoryController extends Controller
             [
                 'publicaciones' => $publicaciones,
                 'userInfo' => $userInfo,
-                'idHistoria' => $idHistoria,
+                'story' => $story,
+                'isOwner' => $isOwner,
             ]
         );
     }
@@ -233,28 +247,31 @@ class HistoryController extends Controller
             ];
         }
 
-        if (request()->contenido != null) {
-            // Save the image from the content of the request into a blob in the database in base64
-            $image = request()->file('contenido');
-            $image_cont = $image->openFile()->fread($image->getSize());
-            DB::table('historia')->where('id_his', $idHistoria)
-                ->update([
-                    'desc_his' => request()->descripcion,
-                    'estado_his' => request()->estado,
-                    'cont_his' => $image_cont,
-                    'fecha_his' => date('Y-m-d H:i:s'),
-                ]);
-        } else {
-            DB::table('historia')->where('id_his', $idHistoria)
-                ->update([
-                    'desc_his' => request()->descripcion,
-                    'estado_his' => request()->estado,
-                    'fecha_his' => date('Y-m-d H:i:s'),
-                ]);
-        }
-
-        DB::table('contenido')
-            ->insert($data);
+        DB::transaction(
+            function () use ($data, $idHistoria) {
+                if (request()->contenido != null) {
+                    // Save the image from the content of the request into a blob in the database in base64
+                    $image = request()->file('contenido');
+                    $image_cont = $image->openFile()->fread($image->getSize());
+                    DB::table('historia')->where('id_his', $idHistoria)
+                        ->update([
+                            'desc_his' => request()->descripcion,
+                            'estado_his' => request()->estado,
+                            'cont_his' => $image_cont,
+                            'fecha_his' => date('Y-m-d H:i:s'),
+                        ]);
+                } else {
+                    DB::table('historia')->where('id_his', $idHistoria)
+                        ->update([
+                            'desc_his' => request()->descripcion,
+                            'estado_his' => request()->estado,
+                            'fecha_his' => date('Y-m-d H:i:s'),
+                        ]);
+                }
+                DB::table('contenido')
+                    ->insert($data);
+            }
+        );
 
         return redirect('/' . $username . '/story/' . $idHistoria);
     }

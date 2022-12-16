@@ -43,12 +43,14 @@ class PublicationController extends Controller
             return back()->withErrors($validator);
         }
 
-        DB::table('comentario')->insert([
-            'id_pub' => $idPublicacion,
-            'id_usu' => session()->get('user')->id_usu,
-            'cont_com' => request()->comentario,
-            'fecha_com' => date('Y-m-d H:i:s'),
-        ]);
+        DB::transaction(function () use ($idPublicacion) {
+            DB::table('comentario')->insert([
+                'id_pub' => $idPublicacion,
+                'id_usu' => session()->get('user')->id_usu,
+                'cont_com' => request()->comentario,
+                'fecha_com' => date('Y-m-d H:i:s'),
+            ]);
+        });
 
         return back();
     }
@@ -79,23 +81,27 @@ class PublicationController extends Controller
         $image = request()->file('contenido');
         $image_cont = $image->openFile()->fread($image->getSize());
 
-        // Insert into 'publicacion' (idUsuarioAutor, descripcion, contenido, fecha)
-        // values (idUsuario, descripcion, contenido, fecha)
-        $idPublicacion = DB::table('publicacion')
-            ->insertGetId([
-                'autor' => $idUsuario,
-                'desc_pub' => request()->descripcion,
-                'cont_pub' => $image_cont,
-                'fecha_pub' => date('Y-m-d H:i:s'),
-            ]);
+        DB::transaction(
+            function () use ($idUsuario, $image_cont) {
+                // Insert into 'publicacion' (idUsuarioAutor, descripcion, contenido, fecha)
+                // values (idUsuario, descripcion, contenido, fecha)
+                $idPublicacion = DB::table('publicacion')
+                    ->insertGetId([
+                        'autor' => $idUsuario,
+                        'desc_pub' => request()->descripcion,
+                        'cont_pub' => $image_cont,
+                        'fecha_pub' => date('Y-m-d H:i:s'),
+                    ]);
 
-        //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
-        DB::table('mensaje')->insert([
-            'id_usu' => $idUsuario,
-            'cont_men' => "Nueva Publicación!",
-            'link' => Session::get('user')->nom_usu . "/publication/" . $idPublicacion,
-            'fecha_men' => date('Y-m-d H:i:s'),
-        ]);
+                //Insert into 'mensaje' y 'receptor' (idUsuarioEmisor, idMensaje, contMensaje, fecha_men == fecha_creacion) (idUsuarioReceptor, idMensaje)
+                DB::table('mensaje')->insert([
+                    'id_usu' => $idUsuario,
+                    'cont_men' => "Nueva Publicación!",
+                    'link' => Session::get('user')->nom_usu . "/publication/" . $idPublicacion,
+                    'fecha_men' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        );
 
         return redirect('/' . Session::get('user')->nom_usu . '/profile');
     }
@@ -118,6 +124,7 @@ class PublicationController extends Controller
             ->where('id_usu', $user->id_usu)
             ->where('id_pub', $idPublicacion)
             ->first();
+
         if ($rt) {
             DB::table('rt')
                 ->where('id_usu', $user->id_usu)
@@ -126,13 +133,15 @@ class PublicationController extends Controller
             return back();
         }
 
-        //Insert into 'rt' (idUsuario, idPublicacion, fecha)
-        //values (idUsuario, idPublicacion, fecha)
-        DB::table('rt')->insert([
-            'id_usu' => $user->id_usu,
-            'id_pub' => $idPublicacion,
-            //'fecha' => date('Y-m-d H:i:s'),
-        ]);
+        DB::transaction(function () use ($idPublicacion, $user) {
+            //Insert into 'rt' (idUsuario, idPublicacion, fecha)
+            //values (idUsuario, idPublicacion, fecha)
+            DB::table('rt')->insert([
+                'id_usu' => $user->id_usu,
+                'id_pub' => $idPublicacion,
+                //'fecha' => date('Y-m-d H:i:s'),
+            ]);
+        });
 
         return back();
     }
@@ -163,6 +172,10 @@ class PublicationController extends Controller
                 ->delete();
 
             DB::table('rt')
+                ->where('id_pub', $idPublicacion)
+                ->delete();
+
+            DB::table('contenido')
                 ->where('id_pub', $idPublicacion)
                 ->delete();
 
@@ -229,23 +242,25 @@ class PublicationController extends Controller
             return back()->withErrors($validator);
         }
 
-        if (request()->contenido != null) {
-            // Save the image from the content of the request into a blob in the database in base64
-            $image = request()->file('contenido');
-            $image_cont = $image->openFile()->fread($image->getSize());
-            DB::table('publicacion')
-                ->where('id_pub', $idPublicacion)
-                ->update([
-                    'desc_pub' => request()->descripcion,
-                    'cont_pub' => $image_cont,
-                ]);
-        } else {
-            DB::table('publicacion')
-                ->where('id_pub', $idPublicacion)
-                ->update([
-                    'desc_pub' => request()->descripcion,
-                ]);
-        }
+        DB::transaction(function () use ($idPublicacion) {
+            if (request()->contenido != null) {
+                // Save the image from the content of the request into a blob in the database in base64
+                $image = request()->file('contenido');
+                $image_cont = $image->openFile()->fread($image->getSize());
+                DB::table('publicacion')
+                    ->where('id_pub', $idPublicacion)
+                    ->update([
+                        'desc_pub' => request()->descripcion,
+                        'cont_pub' => $image_cont,
+                    ]);
+            } else {
+                DB::table('publicacion')
+                    ->where('id_pub', $idPublicacion)
+                    ->update([
+                        'desc_pub' => request()->descripcion,
+                    ]);
+            }
+        });
 
         return redirect('/' . $username . '/publication/' . $idPublicacion);
     }

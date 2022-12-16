@@ -102,6 +102,7 @@ class UserSettingsController extends Controller
             ->first()
             ->id_usu;
 
+        DB::beginTransaction();
         // Actualizamos los datos del usuario (persona, usuario, info_usuario)        
         DB::table('persona')
             ->where('dni', $idPersona)
@@ -133,6 +134,17 @@ class UserSettingsController extends Controller
                 'mail' => request()->mail,
                 'nom_usu' => request()->nom_usu
             ]);
+
+        DB::commit();
+
+        $user = DB::table('usuario')
+            ->join('info_usu', 'info_usu.id_usu', '=', 'usuario.id_usu')
+            ->join('persona', 'persona.dni', '=', 'usuario.id_usu')
+            ->where('info_usu.nom_usu', request()->nom_usu)
+            ->first();
+
+        // Actualizamos la sesión
+        session(['user' => $user]);
 
         return redirect('/' . request()->nom_usu . '/profile');
     }

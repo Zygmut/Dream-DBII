@@ -20,7 +20,8 @@ class UserSearchController extends Controller
                 ->get();
             return view(
                 'search',
-                [
+                [   
+                    'data' => "",
                     'users' => $users
                 ]
             );
@@ -35,6 +36,7 @@ class UserSearchController extends Controller
         return view(
             'search',
             [
+                'data' => $data, 
                 'users' => $users
             ]
         );

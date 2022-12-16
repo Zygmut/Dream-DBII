@@ -465,8 +465,8 @@ class UserController extends Controller
                     persona
                     JOIN(
                     USUARIO
-                    JOIN usu_usu ON usu_usu.seguido = \'' . $user->id_usu . '\'
-                    AND usu_usu.seguidor = usuario.id_usu
+                    JOIN usu_usu ON usu_usu.seguidor = \'' . $user->id_usu . '\'
+                    AND usu_usu.seguido = usuario.id_usu
                     ) ON persona.DNI = usuario.id_usu
                 ) AS p
             ) ON info_usu.id_usu = p.id_usu

@@ -105,3 +105,9 @@ Route::get('/{username}/following', 'App\Http\Controllers\UserController@followi
 
 // Delete an account
 Route::post('/{username}/account/delete', 'App\Http\Controllers\UserController@deleteAccount');
+
+// Mark notification as read
+Route::post('/{username}/notification/{idMensaje}/read', 'App\Http\Controllers\UserNotificationsController@read');
+
+// Delete notification
+Route::post('/{username}/notification/{idMensaje}/delete', 'App\Http\Controllers\UserNotificationsController@delete');

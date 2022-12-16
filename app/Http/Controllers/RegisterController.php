@@ -45,6 +45,7 @@ class RegisterController extends Controller
             'mail' => 'required | email | max:255',
             'nombreUsuario' => 'required | max:255 | min:3 | regex:/^[a-zA-Z0-9]+$/',
             'contrasena' => 'required | max:255 | min:3 | regex:/^[a-zA-Z0-9]+$/',
+            'perfil' => 'nullable | image | mimes:jpeg,png,jpg,gif,svg',
         ]);
 
         // If the validation fails, redirect to the register page
@@ -69,6 +70,8 @@ class RegisterController extends Controller
             ]);
         }
 
+        DB::beginTransaction();
+
         // Insertar datos en tabla persona
         DB::table('persona')->insert([
             'dni' => $data['dni'],
@@ -77,6 +80,7 @@ class RegisterController extends Controller
             'telf' => $data['telefono'],
             'nacimiento' => $data['fechaNacimiento'],
         ]);
+
         $imagePath = public_path("img/default_profile.jpg");
         $image = base64_encode(file_get_contents($imagePath));
         // Insertar datos en tabla usuario
@@ -89,12 +93,24 @@ class RegisterController extends Controller
             'foto_perfil' => null //$image  // Mirar como subir una imagen por defecto a la base de datos
         ]);
 
+        if (request()->perfil != null) {
+            $image = request()->file('perfil');
+            $image_cont = $image->openFile()->fread($image->getSize());
+            DB::table('usuario')
+                ->where('id_usu', $data['dni'])
+                ->update([
+                    'foto_perfil' => $image_cont
+                ]);
+        }
+
         // Insertar datos en tabla info_usuario
         DB::table('info_usu')->insert([
             'id_usu' => $data['dni'],
             'nom_usu' => $data['nombreUsuario'],
             'mail' => $data['mail']
         ]);
+
+        DB::commit();
 
         // Coger user de la base de datos para crear la sesión
         $user = DB::table('usuario')

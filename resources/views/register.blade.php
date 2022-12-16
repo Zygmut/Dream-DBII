@@ -7,11 +7,20 @@
     <section class="vh-100">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="col-sm-9 col-md-7 col-lg-7 mx-auto">
                     <div class="card border-0 shadow-lg rounded-3 my-5 bg-light">
                         <div class="card-body p-4 p-sm-5">
                             <h1 class="card-title text-center mb-5 fs-5 ">Registro</h1>
-                            <form action="/register" method="POST">
+                            @if ($errors->any())
+                                <div class="alert alert-danger" role="alert">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            <form action="/register" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     <div class="form-floating col-md-6 mb-3">
@@ -50,18 +59,25 @@
                                     <label for="mail" class="form-label">Email</label>
                                 </div>
 
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario"
-                                        placeholder="Introduzca un nombre de usuario">
-                                    <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-                                </div>
+                                <div class="row">
+                                    <div class="form-floating col-md-6 mb-3">
+                                        <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario"
+                                            placeholder="Introduzca un nombre de usuario">
+                                        <label for="nombreUsuario" class="form-label">   Nombre de usuario</label>
+                                    </div>
 
-                                <div class="form-floating mb-3">
-                                    <input type="password" class="form-control" id="contrasena" name="contrasena"
-                                        placeholder="Introduzca una contraseña">
-                                    <label for="contrasena" class="form-label">Contraseña</label>
+                                    <div class="form-floating col-md-6 mb-3">
+                                        <input type="password" class="form-control" id="contrasena" name="contrasena"
+                                            placeholder="Introduzca una contraseña">
+                                        <label for="contrasena" class="form-label">   Contraseña</label>
+                                    </div>
                                 </div>
-
+                                <div class="row mb-3">
+                                    <div class="form-group ">
+                                        <label for="perfil" class="control-label">Imagen de perfil</label>
+                                        <input id="perfil" type="file" class="form-control" name="perfil">
+                                    </div>
+                                </div>
                                 <div class="d-grid">
                                     <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">
                                         Registrarse
@@ -79,14 +95,5 @@
                 </div>
             </div>
         </div>
-        @if ($errors->any())
-            <div class="alert alert-danger" role="alert">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
     </section>
 @endsection

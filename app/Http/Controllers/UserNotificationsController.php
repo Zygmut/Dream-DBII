@@ -16,7 +16,10 @@ class UserNotificationsController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        $user = DB::table('info_usu')
+            ->join('usuario', 'usuario.id_usu', 'info_usu.id_usu')
+            ->where('nom_usu', $username)
+            ->first();
         if (!$user) {
             return redirect('/login');
         }
@@ -43,6 +46,7 @@ class UserNotificationsController extends Controller
             ->join('notificacion', 'notificacion.id_men', 'mensaje.id_men')
             ->join('usuario', 'usuario.id_usu', 'notificacion.id_usu')
             ->join('usuario as autor', 'autor.id_usu', 'mensaje.id_usu')
+            ->join('info_usu as info_autor', 'info_autor.id_usu', 'autor.id_usu')
             ->where('notificacion.id_usu',  $user->id_usu)
             ->orderBy('mensaje.fecha_men', 'desc')
             ->get();
@@ -58,5 +62,87 @@ class UserNotificationsController extends Controller
                 'notificaciones' => $notificaciones,
             ]
         );
+    }
+
+    public function delete($username, $idMensaje)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario existe
+        $user = DB::table('info_usu')
+            ->where('nom_usu', $username)
+            ->first();
+
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        $validator = Validator::make(request()->all(), [
+            'link' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+        DB::beginTransaction();
+
+        DB::table('notificacion')
+            ->where('id_men', '=', $idMensaje)
+            ->where('id_usu', '=', $user->id_usu)
+            ->delete();
+
+        DB::commit();
+
+        // Se recarga
+        return redirect('/' . $username . '/notifications');
+    }
+
+    public function read($username, $idMensaje)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario existe
+        $user = DB::table('info_usu')
+            ->where('nom_usu', $username)
+            ->first();
+
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        $validator = Validator::make(request()->all(), [
+            'link' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        $notificacion = DB::table('notificacion')
+            ->where('id_men', $idMensaje)
+            ->where('id_usu', session()->get('user')->id_usu)
+            ->first();
+
+        if ($notificacion->estado_not == "leido") {
+            return redirect('/' . request()->link);
+        }
+
+        DB::beginTransaction();
+        // Actualizamos el mensaje
+        DB::table('notificacion')
+            ->where('id_men', '=', $idMensaje)
+            ->where('id_usu', '=', session()->get('user')->id_usu)
+            ->update([
+                'estado_not' => "leido",
+            ]);
+        DB::commit();
+
+        return redirect('/' . request()->link);
     }
 }
