@@ -40,10 +40,10 @@ class UserNotificationsController extends Controller
          *    usuario.id_usu = '12345678C' 
          */
         $notificaciones = DB::table('mensaje')
-            ->join('receptor', 'receptor.id_men', '=', 'mensaje.id_men')
-            ->join('usuario', 'usuario.id_usu', '=', 'receptor.id_usu')
-            ->join('usuario as autor', 'autor.id_usu', '=', 'mensaje.id_usu')
-            ->where('receptor.id_usu', '=', $user->id_usu)
+            ->join('notificacion', 'notificacion.id_men', 'mensaje.id_men')
+            ->join('usuario', 'usuario.id_usu', 'notificacion.id_usu')
+            ->join('usuario as autor', 'autor.id_usu', 'mensaje.id_usu')
+            ->where('notificacion.id_usu',  $user->id_usu)
             ->orderBy('mensaje.fecha_men', 'desc')
             ->get();
 

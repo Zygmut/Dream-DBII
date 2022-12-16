@@ -12,7 +12,7 @@
                             <ul class="list-group">
                                 @foreach ($notificaciones as $notificacion)
                                     <li class="list-group list-group-item-info">
-                                        <a href="{{ $notificacion->link }} ">
+                                        <a href="/{{ $notificacion->link }} ">
                                             {{ $notificacion->cont_men }}
                                         </a>
                                     </li>

@@ -1,4 +1,8 @@
-@extends('layouts.base', ['title' => 'Home'])
+@extends('layouts.base', ['title' => 'Perfil'])
+
+@push('head')
+    <meta http-equiv="refresh" content="30">
+@endpush
 
 @push('styles')
     <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}">
@@ -22,8 +26,6 @@
                                         style="z-index: 1;">
                                         Editar perfil
                                     </a>
-                                    <a href="/{{ $userInfo->nom_usu }}/notifications" class="btn btn-outline-dark"
-                                        style="z-index: 1; margin-top:15px">Notificaciones</a>
                                 @else
                                     @if ($isFollowing)
                                         <form action="/{{ session('user')->nom_usu }}/unfollow/{{ $userInfo->nom_usu }}"
@@ -40,15 +42,15 @@
                                     @endif
                                 @endif
                             </div>
-                            <div class="ms-3" style="margin-top: 130px;">
+                            <div class="ms-4" style="margin-top: 130px;">
                                 <h5> {{ $userInfo->nom_usu }} </h5>
                                 <p>{{ $per->nom_per }} {{ $per->apellidos }}</p>
                             </div>
                         </div>
                         <div class="p-4 text-black">
                             <div class="d-flex justify-content-end text-center py-1">
-                                <div >
-                                    <a class="mb-1 h5 text-decoration-none text-black " >
+                                <div>
+                                    <a class="mb-1 h5 text-decoration-none text-black ">
                                         {{ $numberPublications }}
                                     </a>
                                     <p class="small text-muted mb-0">Fotos</p>
@@ -62,6 +64,11 @@
                                     <a class="mb-1 h5 text-decoration-none text-black"
                                         href="/{{ $userInfo->nom_usu }}/following">{{ $following }}</a>
                                     <p class="small text-muted mb-0">Siguiendo</p>
+                                </div>
+                                <div class="px-3">
+                                    <a class="mb-1 h5 text-decoration-none text-black"
+                                        href="/{{ $userInfo->nom_usu }}/notifications"> {{ $numberNotificactions }}</a>
+                                    <p class="small text-muted mb-0">Notificaciones</p>
                                 </div>
                             </div>
                             <div class="card-body p-4 text-black">
@@ -81,7 +88,7 @@
                                                     <a href="/{{ $userInfo->nom_usu }}/story/{{ $story->id_his }}">
                                                         <img src="data:image/png;base64,{{ base64_encode($story->cont_his) }}"
                                                             alt="historias" class="img-fluid rounded shadow-sm"
-                                                            style="width: 100%; height: 100%">
+                                                            style="width: 100%; aspect-ratio:1/1 ">
                                                     </a>
                                                 </div>
                                             @else
@@ -91,7 +98,7 @@
                                                         <a href="/{{ $userInfo->nom_usu }}/story/{{ $story->id_his }}">
                                                             <img src="data:image/png;base64,{{ base64_encode($story->cont_his) }}"
                                                                 alt="historias" class="img-fluid rounded shadow-sm"
-                                                                style="width: 100%; height: 100%">
+                                                                style="width: 100%; aspect-ratio:1/1 ">
                                                         </a>
                                                     </div>
                                                 @endif
@@ -108,7 +115,7 @@
                                                 <a href="/{{ $rt->nom_usu }}/publication/{{ $rt->id_pub }}">
                                                     <img src="data:image/png;base64,{{ base64_encode($rt->cont_pub) }}"
                                                         alt="rt" class="img-fluid rounded shadow-sm"
-                                                        style="width: 100%; height: 100%">
+                                                        style="width: 100%; aspect-ratio:1/1 ">
                                                 </a>
                                             </div>
                                         @endforeach
@@ -124,7 +131,7 @@
                                                     href="/{{ $userInfo->nom_usu }}/publication/{{ $publication->id_pub }}">
                                                     <img src="data:image/png;base64,{{ base64_encode($publication->cont_pub) }}"
                                                         alt="publicaciones" class="img-fluid rounded shadow-sm"
-                                                        style="width: 100%; height: 100%">
+                                                        style="width: 100%; aspect-ratio:1/1 ">
                                                 </a>
                                             </div>
                                         @endforeach

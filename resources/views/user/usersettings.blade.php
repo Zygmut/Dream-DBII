@@ -1,8 +1,8 @@
 @extends('layouts.base', ['title' => 'Settings'])
 
 @section('content')
-    <section class="vh-100">
-        <div class="container py-5 h-100">
+    <section>
+        <div class="container ">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-sm-9 col-md-7 col-lg-7 mx-auto">
                     <div class="card border-0 shadow-lg rounded-3 my-5 bg-light">
@@ -57,8 +57,7 @@
                                 </div>
 
                                 <div class="row mb-3">
-
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group ">
                                         <label for="perfil" class="control-label">Imagen de perfil</label>
                                         <input id="perfil" type="file" class="form-control" name="perfil">
                                     </div>
@@ -66,6 +65,16 @@
                                 <div class="d-grid">
                                     <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">
                                         Modificar
+                                    </button>
+                                </div>
+                            </form>
+                            <hr>
+                            <form action="/{{ $userInfo->nom_usu }}/account/delete" method="POST">
+                                @csrf
+                                <div class="d-grid">
+                                    <button class="btn btn-danger btn-login text-uppercase fw-bold" type="submit"
+                                        id="eliminar">
+                                        Eliminar cuenta
                                     </button>
                                 </div>
                             </form>

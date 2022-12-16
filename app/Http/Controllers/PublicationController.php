@@ -134,7 +134,7 @@ class PublicationController extends Controller
             //'fecha' => date('Y-m-d H:i:s'),
         ]);
 
-        return redirect('/' . $username . '/profile');
+        return back();
     }
 
     public function delete($username, $idPublicacion)
@@ -172,5 +172,81 @@ class PublicationController extends Controller
         });
 
         return redirect('/' . $username . '/profile');
+    }
+
+    public function edit($username, $idPublicacion)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario es el autor de la publicación
+        $publication = DB::table('publicacion')->where('id_pub', $idPublicacion)->first();
+        if ($publication->autor != $user->id_usu) {
+            return back();
+        }
+
+        return view(
+            'user.usereditPublication',
+            [
+                'publicacion' => $publication,
+            ]
+        );
+    }
+
+    public function update($username, $idPublicacion)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario existe
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        //Comprobar si el usuario es el autor de la publicación
+        $publication = DB::table('publicacion')->where('id_pub', $idPublicacion)->first();
+        if ($publication->autor != $user->id_usu) {
+            return back();
+        }
+
+        // Validar los datos
+        $validator = Validator::make(request()->all(), [
+            'descripcion' => 'required|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        if (request()->contenido != null) {
+            // Save the image from the content of the request into a blob in the database in base64
+            $image = request()->file('contenido');
+            $image_cont = $image->openFile()->fread($image->getSize());
+            DB::table('publicacion')
+                ->where('id_pub', $idPublicacion)
+                ->update([
+                    'desc_pub' => request()->descripcion,
+                    'cont_pub' => $image_cont,
+                ]);
+        } else {
+            DB::table('publicacion')
+                ->where('id_pub', $idPublicacion)
+                ->update([
+                    'desc_pub' => request()->descripcion,
+                ]);
+        }
+
+        return redirect('/' . $username . '/publication/' . $idPublicacion);
     }
 }

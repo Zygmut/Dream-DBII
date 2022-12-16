@@ -125,7 +125,178 @@ class HistoryController extends Controller
             [
                 'publicaciones' => $publicaciones,
                 'userInfo' => $userInfo,
+                'idHistoria' => $idHistoria,
             ]
         );
+    }
+
+    public function editHistory($username, $idHistoria)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $userInfo = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$userInfo) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que la historia existe
+        $historia = DB::table('historia')->where('id_his', $idHistoria)->first();
+        if (!$historia) {
+            // Si no existe, redirigir a la página de login
+            return back();
+        }
+
+        // Comprobar que el usuario que está intentando editar la historia es el mismo que está logueado
+        if (Session::get('user')->id_usu != $userInfo->id_usu) {
+            return back();
+        }
+
+        // Obtener todas las publicaciones del usuario
+        $publications = DB::table('publicacion')
+            ->join('usuario', 'usuario.id_usu', '=', 'publicacion.autor')
+            ->where('usuario.id_usu', $userInfo->id_usu)
+            ->orderByDesc('publicacion.fecha_pub')
+            ->get('publicacion.*');
+
+        $publicacionesDeLaHistoria = DB::table('publicacion')
+            ->join('contenido', 'publicacion.id_pub', '=', 'contenido.id_pub')
+            ->join('historia', 'historia.id_his', '=', 'contenido.id_his')
+            ->where('historia.id_his', '=', $idHistoria)
+            ->orderByDesc('publicacion.fecha_pub')
+            ->get('publicacion.id_pub');
+
+        $aux = [];
+        foreach ($publicacionesDeLaHistoria as $publicacion) {
+            $aux[] = $publicacion->id_pub;
+        }
+
+        return view(
+            'user.useredithistory',
+            [
+                'history' => $historia,
+                'userInfo' => $userInfo,
+                'idHistoria' => $idHistoria,
+                'publicaciones' => $publications,
+                'publicacionesDeLaHistoria' => $aux,
+            ]
+        );
+    }
+
+    public function updateHistory($username, $idHistoria)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $userInfo = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$userInfo) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que la historia existe
+        $historia = DB::table('historia')->where('id_his', $idHistoria)->first();
+        if (!$historia) {
+            // Si no existe, redirigir a la página de login
+            return back();
+        }
+
+        // Comprobar que el usuario que está intentando editar la historia es el mismo que está logueado
+        if (Session::get('user')->id_usu != $userInfo->id_usu) {
+            return back();
+        }
+
+        // Validamos los datos
+        $validator = Validator::make(request()->all(), [
+            'descripcion' => 'required | max:255',
+            'estado' => 'required',
+            'publicaciones' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/' . $username . '/history/' . $idHistoria . '/edit')->withErrors($validator);
+        }
+
+        // Actualizamos la historia
+        $data = [];
+        foreach (request()->publicaciones as $publicacion) {
+            $data[] = [
+                'id_his' => $idHistoria,
+                'id_pub' => $publicacion,
+            ];
+        }
+
+        if (request()->contenido != null) {
+            // Save the image from the content of the request into a blob in the database in base64
+            $image = request()->file('contenido');
+            $image_cont = $image->openFile()->fread($image->getSize());
+            DB::table('historia')->where('id_his', $idHistoria)
+                ->update([
+                    'desc_his' => request()->descripcion,
+                    'estado_his' => request()->estado,
+                    'cont_his' => $image_cont,
+                    'fecha_his' => date('Y-m-d H:i:s'),
+                ]);
+        } else {
+            DB::table('historia')->where('id_his', $idHistoria)
+                ->update([
+                    'desc_his' => request()->descripcion,
+                    'estado_his' => request()->estado,
+                    'fecha_his' => date('Y-m-d H:i:s'),
+                ]);
+        }
+
+        DB::table('contenido')
+            ->insert($data);
+
+        return redirect('/' . $username . '/story/' . $idHistoria);
+    }
+
+    public function deleteHistory($username, $idHistoria)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $userInfo = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$userInfo) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que la historia existe
+        $historia = DB::table('historia')->where('id_his', $idHistoria)->first();
+        if (!$historia) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/' . $username . '/profile');
+        }
+
+        // Comprobar que el usuario que está intentando editar la historia es el mismo que está logueado
+        if (Session::get('user')->id_usu != $userInfo->id_usu) {
+            return redirect('/' . $username . '/profile');
+        }
+
+        DB::transaction(function () use ($idHistoria) {
+            // Eliminamos el contenido de la historia
+            DB::table('contenido')
+                ->where('id_his', '=', $idHistoria)
+                ->delete();
+
+            // Eliminamos la historia
+            DB::table('historia')
+                ->where('id_his', '=', $idHistoria)
+                ->delete();
+        });
+
+        return redirect('/' . $username . '/profile');
     }
 }

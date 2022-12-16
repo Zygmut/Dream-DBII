@@ -62,7 +62,7 @@ BEGIN
         IF var_final = 1 THEN
             LEAVE bucle;
         END IF;
-        INSERT INTO receptor(receptor.id_men, receptor.id_usu) VALUES(idMen,follower);
+        INSERT INTO notificacion VALUES(idMen,follower, 'no leido');
 	END LOOP bucle;
 	CLOSE cursorReceivers;
 END

@@ -37,8 +37,11 @@ Route::get('/{username}/publication/{idPublicacion}', 'App\Http\Controllers\User
 // New comment form
 Route::post('/{idUsuario}/comment/newcomment/{idPublicacion}', 'App\Http\Controllers\PublicationController@newcomment');
 
-// TODO
+// Edit a publication
 Route::get('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers\PublicationController@edit');
+
+// Edit a publication form
+Route::post('/{username}/publication/{idPublicacion}/edit', 'App\Http\Controllers\PublicationController@update');
 
 // Publicaciones de los usuarios que sigue el usuario logueado
 Route::get('/{username}', 'App\Http\Controllers\UserFeedController@index');
@@ -79,6 +82,15 @@ Route::post('/{username}/unfollow/{usernameunfollow}', 'App\Http\Controllers\Use
 // Stories page
 Route::get('/{username}/story/{idHistoria}', 'App\Http\Controllers\HistoryController@viewHistory');
 
+// Stories page edit
+Route::get('/{username}/story/{idHistoria}/edit', 'App\Http\Controllers\HistoryController@editHistory');
+
+// Stories page edit form
+Route::post('/{username}/story/{idHistoria}/edit', 'App\Http\Controllers\HistoryController@updateHistory');
+
+// Stories page delete
+Route::post('/{username}/story/{idHistoria}/delete', 'App\Http\Controllers\HistoryController@deleteHistory');
+
 // Rt a publication
 Route::post('/{username}/rt/{idPublicacion}', 'App\Http\Controllers\PublicationController@rt');
 
@@ -90,3 +102,6 @@ Route::get('/{username}/followers', 'App\Http\Controllers\UserController@followe
 
 // See all users that the user follows
 Route::get('/{username}/following', 'App\Http\Controllers\UserController@following');
+
+// Delete an account
+Route::post('/{username}/account/delete', 'App\Http\Controllers\UserController@deleteAccount');

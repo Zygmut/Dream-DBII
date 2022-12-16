@@ -1,6 +1,6 @@
 <nav class="navbar navbar-dark navbar-expand-lg bg-dark rounded sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">EPS Red Social</a>
+        <a class="navbar-brand" href="/{{ session('user')->nom_usu }}">EPS Red Social</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
             aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -10,7 +10,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/{{ session('user')->nom_usu }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-file-earmark-break" viewBox="0 0 16 16">
+                            class="bi bi-file-earmark-break" viewBox="0 0 16 16"
+                            style="height:1em; width:1em; top: -.125em; position: relative;">
+                            >
                             <path
                                 d="M14 4.5V9h-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v7H2V2a2 2 0 0 1 2-2h5.5L14 4.5zM13 12h1v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2h1v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2zM.5 10a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H.5z" />
                         </svg>
@@ -19,7 +21,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/{{ session('user')->nom_usu }}/search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-search" viewBox="0 0 16 16">
+                            class="bi bi-search" viewBox="0 0 16 16"
+                            style="height:1em; width:1em; top: -.125em; position: relative;">
+                            >
                             <path
                                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
                         </svg>
@@ -31,7 +35,9 @@
             @if (Request::is('/settings')) active @endif"
                             href="/{{ session('user')->nom_usu }}/settings">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-gear" viewBox="0 0 16 16">
+                                class="bi bi-gear" viewBox="0 0 16 16"
+                                style="height:1em; width:1em; top: -.125em; position: relative;">
+                                >
                                 <path
                                     d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
                                 <path
@@ -45,7 +51,9 @@
             @if (Request::is('/publication/new')) active @endif"
                         href="/publication/new">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-camera" viewBox="0 0 16 16">
+                            class="bi bi-camera" viewBox="0 0 16 16"
+                            style="height:1em; width:1em; top: -.125em; position: relative;">
+                            >
                             <path
                                 d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z" />
                             <path
@@ -56,7 +64,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/history/new">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-folder-plus" viewBox="0 0 16 16">
+                            class="bi bi-folder-plus" viewBox="0 0 16 16"
+                            style="height:1em; width:1em; top: -.125em; position: relative;">
+                            >
                             <path
                                 d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z" />
                             <path
@@ -67,7 +77,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/{{ session('user')->nom_usu }}/logout">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            class="bi bi-box-arrow-right" viewBox="0 0 16 16"
+                            style="height:1em; width:1em; top: -.125em; position: relative;">
+                            >
                             <path fill-rule="evenodd"
                                 d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
                             <path fill-rule="evenodd"

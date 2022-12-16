@@ -41,13 +41,20 @@ class UserController extends Controller
             ->orderBy('fecha_pub', 'desc')
             ->get('publicacion.*');
 
+        $publicationsLength = count($publications);
+
         $rts = DB::table('publicacion')
             ->join('rt', 'rt.id_pub', 'publicacion.id_pub')
             ->join('info_usu', 'info_usu.id_usu', 'publicacion.autor')
             ->where('rt.id_usu', $userInfo->id_usu)
             ->get();
 
-        $publicationsLength = count($publications);
+        $notifications = DB::table('notificacion')
+            ->where('notificacion.id_usu', $userInfo->id_usu)
+            ->where('notificacion.estado_not', 'no leido')
+            ->get();
+
+        $notificationsLength = count($notifications);
 
         $followers = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first()->seguidores;
         $following = DB::table('usuario')->where('id_usu', $userInfo->id_usu)->first()->seguidos;
@@ -85,6 +92,7 @@ class UserController extends Controller
                 'followers' => $followers,
                 'following' => $following,
                 'numberPublications' => $publicationsLength,
+                'numberNotificactions' => $notificationsLength,
                 'isOwner' => $isOwner,
                 'isFollowing' => $isFollowing,
                 'stories' => $stories,
@@ -471,5 +479,93 @@ class UserController extends Controller
                 'following' => $following
             ]
         );
+    }
+
+    public function deleteAccount($username)
+    {
+        // Comprobamos que el usuario esté logueado
+        if (!Session::has('user')) {
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario existe
+        $userInfo = DB::table('info_usu')->where('nom_usu', $username)->first();
+        if (!$userInfo) {
+            // Si no existe, redirigir a la página de login
+            return redirect('/login');
+        }
+
+        // Comprobar que el usuario que está intentando editar la historia es el mismo que está logueado
+        if (Session::get('user')->id_usu != $userInfo->id_usu) {
+            return redirect('/' . $username . '/profile');
+        }
+
+        // de final a principio
+        // persona
+        // usuario
+        // info_usu
+        // usu_usu
+        // mensaje
+        // notificaciones
+        // publicacion
+        // comentario
+        // RT
+        // historia
+        // contenido
+
+        // Eliminar el usuario de la base de datos
+        DB::transaction(function () use ($userInfo) {
+            // Eliminar contenido de todas las historias
+            DB::table('contenido')
+                ->join('historia', 'historia.id_his', '=', 'contenido.id_his')
+                ->where('historia.id_usu', $userInfo->id_usu)
+                ->delete();
+
+            // Eliminar historias
+            DB::table('historia')->where('id_usu', $userInfo->id_usu)->delete();
+
+            // Eliminar rt
+            DB::table('rt')->where('id_usu', $userInfo->id_usu)->delete();
+
+            // Eliminar los comentarios
+            DB::table('comentario')->where('id_usu', $userInfo->id_usu)->delete();
+
+            // Eliminar publicaciones
+            DB::table('publicacion')->where('autor', $userInfo->id_usu)->delete();
+
+            // Eliminar mensajes
+            DB::table('mensaje')->where('id_usu', $userInfo->id_usu)->delete();
+
+            // Decrementar el número de seguidores de los usuarios que seguía y de los que lo seguían
+            DB::table('usuario')
+                ->join('usu_usu', 'usu_usu.seguido', '=', 'usuario.id_usu')
+                ->where('usu_usu.seguidor', $userInfo->id_usu)
+                ->decrement('seguidores');
+
+            DB::table('usuario')
+                ->join('usu_usu', 'usu_usu.seguidor', '=', 'usuario.id_usu')
+                ->where('usu_usu.seguido', $userInfo->id_usu)
+                ->decrement('seguidos');
+
+            // Eliminar usu_usu
+            DB::table('usu_usu')
+                ->where('seguidor', $userInfo->id_usu)
+                ->delete();
+
+            DB::table('usu_usu')
+                ->where('seguido', $userInfo->id_usu)
+                ->delete();
+
+            // Eliminar el usuario de la tabla info_usu
+            DB::table('info_usu')->where('id_usu', $userInfo->id_usu)->delete();
+
+            // Eliminar el usuario de la tabla usuario
+            DB::table('usuario')->where('id_usu', $userInfo->id_usu)->delete();
+
+            // Eliminar el usuario de la tabla persona
+            DB::table('persona')->where('DNI', $userInfo->id_usu)->delete();
+        });
+
+        return redirect(session('user')->nom_usu . '/logout');
     }
 }
