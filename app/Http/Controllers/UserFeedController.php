@@ -16,28 +16,48 @@ class UserFeedController extends Controller
         }
 
         //Comprobar si el usuario existe
-        $user = DB::table('info_usuario')->where('nombreUsuario', $username)->first();
+        $user = DB::table('info_usu')->where('nom_usu', $username)->first();
         if (!$user) {
             return redirect('/login');
         }
-
+        /**
+         * SELECT
+         *  publicacion.*,
+         *  usu_autor.*,
+         *  info_autor.*
+         *FROM
+         *  `usuario`
+         *  INNER JOIN `info_usu` ON `usuario`.`id_usu` = `info_usu`.`id_usu`
+         *  INNER JOIN `usu_usu` ON `usuario`.`id_usu` = `usu_usu`.`seguidor`
+         *  INNER JOIN `publicacion` ON `usu_usu`.`seguido` = `publicacion`.`autor`
+         *  INNER JOIN `usuario` as usu_autor ON usu_autor.id_usu = publicacion.autor
+         *  INNER JOIN info_usu as info_autor ON info_autor.id_usu = usu_autor.id_usu
+         *  LEFT JOIN `contenido` ON `publicacion`.`id_pub` = `contenido`.`id_pub`
+         *  WHERE `contenido`.`id_pub` IS NULL
+         *WHERE
+         *  `usuario`.`id_usu` = '12345678C'
+         *ORDER BY
+         *  `publicacion`.`fecha_pub` DESC
+         *limit
+         *  6
+         */
         // Obtener las publicaciones de los usuarios que sigue el usuario logueado
         $publications = DB::table('usuario')
-            ->join('info_usuario', 'usuario.idUsuario', '=', 'info_usuario.idUsuario')
-            ->join('usuario_usario', 'usuario.idUsuario', '=', 'usuario_usario.idUsuarioSeguidor')
-            ->join('publicacion', 'usuario_usario.idUsuarioSeguido', '=', 'publicacion.idUsuarioAutor')
-            ->orderBy('publicacion.fecha', 'desc')
-            ->where('usuario.idUsuario', session()->get('user')->idUsuario)
-            ->get();
-
-        $comments = [];
-
-        $numComments = 0;
+            ->join('info_usu', 'usuario.id_usu', '=', 'info_usu.id_usu')
+            ->join('usu_usu', 'usuario.id_usu', '=', 'usu_usu.seguidor')
+            ->join('publicacion', 'usu_usu.seguido', '=', 'publicacion.autor')
+            ->join('usuario as usu_autor', 'usu_autor.id_usu', '=', 'publicacion.autor')
+            ->join('info_usu as info_autor', 'info_autor.id_usu', '=', 'usu_autor.id_usu')
+            ->leftJoin('contenido', 'publicacion.id_pub', '=', 'contenido.id_pub')
+            ->where('contenido.id_pub', null)
+            ->orderBy('publicacion.fecha_pub', 'desc')
+            ->where('usuario.id_usu', session()->get('user')->id_usu)
+            ->limit(6)
+            ->get(['publicacion.*', 'usu_autor.*', 'info_autor.*']);
 
         return view(
-            'userfeed',
+            'user.userfeed',
             [
-                'user' => $user,
                 'publications' => $publications,
             ]
         );
