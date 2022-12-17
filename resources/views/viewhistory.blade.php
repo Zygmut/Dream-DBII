@@ -4,22 +4,6 @@
     <div class="d-flex justify-content-center align-items-center mt-2 pt-2">
         <div class="col col-lg-9 col-xl-7 ">
             <div class="card">
-                <!-- Imagenes -->
-                @if (count($publicaciones) > 0)
-                    @foreach ($publicaciones as $publicacion)
-                        <div class="col-lg-6 mb-2 pr-lg-1 mx-auto">
-                            <a href="/{{ $userInfo->nom_usu }}/publication/{{ $publicacion->id_pub }}?in=0">
-                                <img src="data:image/png;base64,{{ base64_encode($publicacion->cont_pub) }}"
-                                    alt="publicaciones" class="img-fluid rounded shadow-sm ">
-                            </a>
-                        </div>
-                    @endforeach
-                @else
-                    <div class="col-lg-6 mb-2 pr-lg-1 mt-2 pt-2">
-                        <h1 class="text-center">No hay publicaciones</h1>
-                    </div>
-                @endif
-
                 <div class="card-block">
                     <div class="timeline-details">
                         <div class="bg-white p-2">
@@ -65,6 +49,22 @@
                         </div>
                     </div>
                 </div>
+                <!-- Imagenes -->
+                @if (count($publicaciones) > 0)
+                    @foreach ($publicaciones as $publicacion)
+                        <div class="col-lg-6 mb-2 pr-lg-1 mx-auto">
+                            <a href="/{{ $userInfo->nom_usu }}/publication/{{ $publicacion->id_pub }}?in=0">
+                                <img src="data:image/png;base64,{{ base64_encode($publicacion->cont_pub) }}"
+                                    alt="publicaciones" class="img-fluid rounded shadow-sm ">
+                            </a>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="mb-2 pr-lg-1 mt-2 pt-2">
+                        <h1 class="card-title text-center">No hay publicaciones</h1>
+                    </div>
+                @endif
+
             </div>
         </div>
     </div>

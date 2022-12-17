@@ -32,14 +32,15 @@ class UserFeedController extends Controller
          *  INNER JOIN `publicacion` ON `usu_usu`.`seguido` = `publicacion`.`autor`
          *  INNER JOIN `usuario` as usu_autor ON usu_autor.id_usu = publicacion.autor
          *  INNER JOIN info_usu as info_autor ON info_autor.id_usu = usu_autor.id_usu
+         *  LEFT JOIN `contenido` ON `publicacion`.`id_pub` = `contenido`.`id_pub`
+         *  WHERE `contenido`.`id_pub` IS NULL
          *WHERE
          *  `usuario`.`id_usu` = '12345678C'
          *ORDER BY
          *  `publicacion`.`fecha_pub` DESC
          *limit
-         * 5
+         *  6
          */
-
         // Obtener las publicaciones de los usuarios que sigue el usuario logueado
         $publications = DB::table('usuario')
             ->join('info_usu', 'usuario.id_usu', '=', 'info_usu.id_usu')
@@ -47,9 +48,11 @@ class UserFeedController extends Controller
             ->join('publicacion', 'usu_usu.seguido', '=', 'publicacion.autor')
             ->join('usuario as usu_autor', 'usu_autor.id_usu', '=', 'publicacion.autor')
             ->join('info_usu as info_autor', 'info_autor.id_usu', '=', 'usu_autor.id_usu')
+            ->leftJoin('contenido', 'publicacion.id_pub', '=', 'contenido.id_pub')
+            ->where('contenido.id_pub', null)
             ->orderBy('publicacion.fecha_pub', 'desc')
             ->where('usuario.id_usu', session()->get('user')->id_usu)
-            ->limit(5)
+            ->limit(6)
             ->get(['publicacion.*', 'usu_autor.*', 'info_autor.*']);
 
         return view(

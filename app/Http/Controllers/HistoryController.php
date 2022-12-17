@@ -231,20 +231,21 @@ class HistoryController extends Controller
         $validator = Validator::make(request()->all(), [
             'descripcion' => 'required | max:255',
             'estado' => 'required',
-            'publicaciones' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return redirect('/' . $username . '/history/' . $idHistoria . '/edit')->withErrors($validator);
+            return redirect('/' . $username . '/story/' . $idHistoria . '/edit')->withErrors($validator);
         }
 
         // Actualizamos la historia
         $data = [];
-        foreach (request()->publicaciones as $publicacion) {
-            $data[] = [
-                'id_his' => $idHistoria,
-                'id_pub' => $publicacion,
-            ];
+        if (request()->publicaciones != null) {
+            foreach (request()->publicaciones as $publicacion) {
+                $data[] = [
+                    'id_his' => $idHistoria,
+                    'id_pub' => $publicacion,
+                ];
+            }
         }
 
         DB::transaction(
@@ -268,8 +269,14 @@ class HistoryController extends Controller
                             'fecha_his' => date('Y-m-d H:i:s'),
                         ]);
                 }
+
                 DB::table('contenido')
-                    ->insert($data);
+                    ->where('id_his', $idHistoria)
+                    ->delete();
+                if (count($data) > 0) {
+                    DB::table('contenido')
+                        ->insert($data);
+                }
             }
         );
 
