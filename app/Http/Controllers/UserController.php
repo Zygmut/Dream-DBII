@@ -521,20 +521,21 @@ class UserController extends Controller
                 ->where('historia.id_usu', $userInfo->id_usu)
                 ->delete();
 
-            // Eliminar historias
-            DB::table('historia')->where('id_usu', $userInfo->id_usu)->delete();
+            // Eliminar las notificaciones que tinen mensajes del usuario a borrar
+            DB::table('notificacion')
+                ->join('mensaje', 'mensaje.id_men', 'notificacion.id_men')
+                ->where('mensaje.id_usu', $userInfo->id_usu)
+                ->delete();
+
+            // Eliminar las notificaciones del usuario
+            DB::table('notificacion')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
 
             // Eliminar rt
-            DB::table('rt')->where('id_usu', $userInfo->id_usu)->delete();
-
-            // Eliminar los comentarios
-            DB::table('comentario')->where('id_usu', $userInfo->id_usu)->delete();
-
-            // Eliminar publicaciones
-            DB::table('publicacion')->where('autor', $userInfo->id_usu)->delete();
-
-            // Eliminar mensajes
-            DB::table('mensaje')->where('id_usu', $userInfo->id_usu)->delete();
+            DB::table('rt')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
 
             // Decrementar el número de seguidores de los usuarios que seguía y de los que lo seguían
             DB::table('usuario')
@@ -547,23 +548,56 @@ class UserController extends Controller
                 ->where('usu_usu.seguido', $userInfo->id_usu)
                 ->decrement('seguidos');
 
-            // Eliminar usu_usu
+            // Eliminar los seguidos usu_usu
             DB::table('usu_usu')
                 ->where('seguidor', $userInfo->id_usu)
                 ->delete();
 
+            // Eliminar los seguidores a usu_usu
             DB::table('usu_usu')
                 ->where('seguido', $userInfo->id_usu)
                 ->delete();
 
+            // Eliminar mensajes
+            DB::table('mensaje')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
+
+            // Eliminar los comentarios
+            DB::table('comentario')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
+
+            // Borrar todos los comentarios de las publicaciones del usuario
+            DB::table('comentario')
+                ->join('publicacion', 'publicacion.id_pub', '=', 'comentario.id_pub')
+                ->where('publicacion.autor', $userInfo->id_usu)
+                ->delete();
+
+            // Eliminar publicaciones
+            DB::table('publicacion')
+                ->where('autor', $userInfo->id_usu)
+                ->delete();
+
+            // Eliminar historias
+            DB::table('historia')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
+
             // Eliminar el usuario de la tabla info_usu
-            DB::table('info_usu')->where('id_usu', $userInfo->id_usu)->delete();
+            DB::table('info_usu')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
 
             // Eliminar el usuario de la tabla usuario
-            DB::table('usuario')->where('id_usu', $userInfo->id_usu)->delete();
+            DB::table('usuario')
+                ->where('id_usu', $userInfo->id_usu)
+                ->delete();
 
             // Eliminar el usuario de la tabla persona
-            DB::table('persona')->where('DNI', $userInfo->id_usu)->delete();
+            DB::table('persona')
+                ->where('DNI', $userInfo->id_usu)
+                ->delete();
         });
 
         return redirect(session('user')->nom_usu . '/logout');
