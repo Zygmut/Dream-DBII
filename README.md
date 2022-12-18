@@ -33,9 +33,9 @@ php artisan migrate
 php artisan db:seed
 ```
 
-## Routes (TODO)
+## Routes 
 
-[See routes](./docs/routes.md)
+[See routes](./routes/web.php)
 
 # Laravel
 
